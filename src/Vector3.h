@@ -6,6 +6,7 @@
 #define RAYTRACER_VECTOR3_H
 
 #include <cmath>
+#include <iostream>
 
 class Vector3 {
 public:
@@ -25,7 +26,7 @@ public:
     inline double Z() const { return v[2]; }
 
     inline Vector3& operator +() { return *this; }
-    inline Vector3 operator -() { return Vector3(-v[0], -v[1], -v[2]); }
+    inline Vector3 operator -() { return {-v[0], -v[1], -v[2]}; }
 
     inline Vector3& operator +=(const Vector3& V2);
     inline Vector3& operator -=(const Vector3& V2);
@@ -33,6 +34,14 @@ public:
     inline Vector3& operator *=(float Scalar);
     inline Vector3& operator /=(const Vector3& V2);
     inline Vector3& operator /=(float Scalar);
+
+    inline Vector3 operator +(const Vector3& V2);
+    inline Vector3 operator -(const Vector3& V2);
+    inline Vector3 operator *(const Vector3& V2);
+    inline Vector3 operator *(float Scalar);
+    inline Vector3 operator /(const Vector3& V2);
+    inline Vector3 operator /(float Scalar);
+    inline friend std::ostream& operator<<(std::ostream& os, const Vector3& Vector);
 
 
 private:
