@@ -1,13 +1,13 @@
 #include <iostream>
 #include "Vector3.h"
+#include "Camera.h"
 
 int main()
 {
-    /* TODO handle simulation and create a png from the result */
-    Vector3 vec1(1, 2, 3);
-    Vector3 vec2(1, 2, 3);
+    Camera camera(200, 100);
 
-    auto vec3 = vec1 + vec2;
-    std::cout << "Hello, World!" << "\n" << vec3 << std::endl;
+    camera.Draw();
+    camera.GetFrame();
+
     return 0;
 }
