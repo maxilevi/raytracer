@@ -6,8 +6,24 @@
 #define RAYTRACER_CAMERA_H
 
 
-class Camera {
+#include "Vector3.h"
 
+class Camera {
+public:
+    Camera(int width, int height) : width(width), height(height) {
+        this->colors = std::unique_ptr(new Vector3[width * height]);
+    };
+
+    void Draw();
+    void SetBackgroundColor(Vector3 color);
+    void SetBackgroundGradient();
+    const Vector3 const * const GetFrame();
+
+
+private:
+    int width;
+    int height;
+    std::unique_ptr<Vector3[]> colors;
 };
 
 
