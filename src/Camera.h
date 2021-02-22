@@ -11,13 +11,13 @@
 class Camera {
 public:
     Camera(int width, int height) : width(width), height(height) {
-        this->colors = std::unique_ptr(new Vector3[width * height]);
+        this->colors = std::unique_ptr<Vector3[]>(new Vector3[width * height]);
     };
 
     void Draw();
     void SetBackgroundColor(Vector3 color);
     void SetBackgroundGradient();
-    const Vector3 const * const GetFrame();
+    Vector3 const * const GetFrame();
 
 
 private:

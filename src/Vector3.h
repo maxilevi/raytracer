@@ -28,25 +28,28 @@ public:
     inline Vector3& operator +() { return *this; }
     inline Vector3 operator -() { return {-v[0], -v[1], -v[2]}; }
 
-    inline Vector3& operator +=(const Vector3& V2);
-    inline Vector3& operator -=(const Vector3& V2);
-    inline Vector3& operator *=(const Vector3& V2);
-    inline Vector3& operator *=(double Scalar);
-    inline Vector3& operator /=(const Vector3& V2);
+    inline Vector3& operator +=(const Vector3&);
+    inline Vector3& operator -=(const Vector3&);
+    inline Vector3& operator *=(const Vector3&);
+    inline Vector3& operator *=(double);
+    inline Vector3& operator /=(const Vector3&);
     inline Vector3& operator /=(double Scalar);
 
-    inline Vector3 operator +(const Vector3& V2);
-    inline Vector3 operator -(const Vector3& V2);
-    inline Vector3 operator *(const Vector3& V2);
-    inline Vector3 operator *(double Scalar);
-    inline Vector3 operator /(const Vector3& V2);
-    inline Vector3 operator /(double Scalar);
-    inline friend std::ostream& operator<<(std::ostream& os, const Vector3& Vector);
+    inline Vector3 operator +(const Vector3&);
+    inline Vector3 operator -(const Vector3&);
+    inline Vector3 operator *(const Vector3&);
+    inline Vector3 operator *(double);
+    inline Vector3 operator /(const Vector3&);
+    inline Vector3 operator /(double);
 
-    static Vector3 UnitX = Vector3(1, 0, 0);
-    static Vector3 UnitY = Vector3(0, 1, 0);
-    static Vector3 UnitZ = Vector3(0, 0, 1);
-    static Vector3 Zero = Vector3(0, 0, 0);
+    inline friend Vector3 operator +(Vector3, Vector3&);
+    inline friend Vector3 operator *(Vector3, double);
+    inline friend std::ostream& operator<<(std::ostream&, const Vector3&);
+
+    static const Vector3 UnitX;
+    static const Vector3 UnitY;
+    static const Vector3 UnitZ;
+    static const Vector3 Zero;
 
 
 private:

@@ -22,7 +22,7 @@ void Camera::Draw()
             double u = (double)i / width;
             double v = (double)j / height;
             Ray r(origin, screenOrigin + Vector3::UnitX * u + Vector3::UnitY * v);
-            (*this->colors)[i * width + j] = Color(r);
+            this->colors[i * width + j] = Color(r);
         }
     }
 }
@@ -32,7 +32,7 @@ void Camera::SetBackgroundColor(Vector3 color)
 
 }
 
-const Vector3 const *const Camera::GetFrame()
+Vector3 const *const Camera::GetFrame()
 {
-    return *this->colors;
+    return this->colors.get();
 }

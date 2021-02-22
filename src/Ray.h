@@ -14,7 +14,7 @@ public:
     Ray(const Vector3& origin, const Vector3& direction) : origin(origin), direction(direction) {};
     inline Vector3 Origin() const { return this->origin; }
     inline Vector3 Direction() const { return this->direction; }
-    inline Vector3 Point(float t) const { return this->origin + this->direction * t; }
+    inline Vector3 Point(double t) const { return this->origin + this->direction * t; }
 
 private:
     Vector3 origin;
