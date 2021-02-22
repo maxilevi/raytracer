@@ -28,7 +28,7 @@ Vector3 &Vector3::operator*=(const Vector3 &V2)
     return *this;
 }
 
-Vector3 &Vector3::operator*=(const float Scalar)
+Vector3 &Vector3::operator*=(const double Scalar)
 {
     this->v[0] *= Scalar;
     this->v[1] *= Scalar;
@@ -44,7 +44,7 @@ Vector3 &Vector3::operator/=(const Vector3 &V2)
     return *this;
 }
 
-Vector3 &Vector3::operator/=(const float Scalar)
+Vector3 &Vector3::operator/=(const double Scalar)
 {
     this->v[0] /= Scalar;
     this->v[1] /= Scalar;
@@ -73,7 +73,7 @@ Vector3 Vector3::operator *(const Vector3& V2)
     return temp;
 }
 
-Vector3 Vector3::operator *(float Scalar)
+Vector3 Vector3::operator *(double Scalar)
 {
     Vector3 temp(*this);
     temp *= Scalar;
@@ -87,7 +87,7 @@ Vector3 Vector3::operator /(const Vector3& V2)
     return temp;
 }
 
-Vector3 Vector3::operator /(float Scalar)
+Vector3 Vector3::operator /(double Scalar)
 {
     Vector3 temp(*this);
     temp /= Scalar;

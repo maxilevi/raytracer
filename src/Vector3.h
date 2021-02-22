@@ -31,17 +31,22 @@ public:
     inline Vector3& operator +=(const Vector3& V2);
     inline Vector3& operator -=(const Vector3& V2);
     inline Vector3& operator *=(const Vector3& V2);
-    inline Vector3& operator *=(float Scalar);
+    inline Vector3& operator *=(double Scalar);
     inline Vector3& operator /=(const Vector3& V2);
-    inline Vector3& operator /=(float Scalar);
+    inline Vector3& operator /=(double Scalar);
 
     inline Vector3 operator +(const Vector3& V2);
     inline Vector3 operator -(const Vector3& V2);
     inline Vector3 operator *(const Vector3& V2);
-    inline Vector3 operator *(float Scalar);
+    inline Vector3 operator *(double Scalar);
     inline Vector3 operator /(const Vector3& V2);
-    inline Vector3 operator /(float Scalar);
+    inline Vector3 operator /(double Scalar);
     inline friend std::ostream& operator<<(std::ostream& os, const Vector3& Vector);
+
+    static Vector3 UnitX = Vector3(1, 0, 0);
+    static Vector3 UnitY = Vector3(0, 1, 0);
+    static Vector3 UnitZ = Vector3(0, 0, 1);
+    static Vector3 Zero = Vector3(0, 0, 0);
 
 
 private:
