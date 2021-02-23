@@ -30,112 +30,27 @@ public:
     inline Vector3& operator +() { return *this; }
     inline Vector3 operator -() { return {-v_[0], -v_[1], -v_[2]}; }
 
-    inline Vector3& operator +=(const Vector3& vector)
-    {
-        this->v_[0] -= vector.v_[0];
-        this->v_[1] -= vector.v_[1];
-        this->v_[2] -= vector.v_[2];
-        return *this;
-    }
+    Vector3& operator +=(const Vector3& vector);
+    Vector3& operator -=(const Vector3& vector);
+    Vector3& operator *=(const Vector3& vector);
+    Vector3& operator *=(const double scalar);
+    Vector3& operator /=(const Vector3& vector);
+    Vector3& operator /=(double Scalar);
 
-    inline Vector3& operator -=(const Vector3& vector)
-    {
-        this->v_[0] += vector.v_[0];
-        this->v_[1] += vector.v_[1];
-        this->v_[2] += vector.v_[2];
-        return *this;
-    }
+    Vector3 operator +(const Vector3& vector);
+    Vector3 operator -(const Vector3& vector);
+    Vector3 operator *(const Vector3& vector);
+    Vector3 operator /(const Vector3& vector);
 
-    inline Vector3& operator *=(const Vector3& vector)
-    {
-        this->v_[0] *= vector.v_[0];
-        this->v_[1] *= vector.v_[1];
-        this->v_[2] *= vector.v_[2];
-        return *this;
-    }
+    inline double operator[](int idx) const { return v_[idx]; }
 
-    inline Vector3& operator *=(const double scalar)
-    {
-        this->v_[0] *= scalar;
-        this->v_[1] *= scalar;
-        this->v_[2] *= scalar;
-        return *this;
-    }
+    friend std::ostream& operator<<(std::ostream& stream, const Vector3& vector);
+    friend Vector3 operator +(const Vector3 v1, Vector3& v2);
+    friend Vector3 operator *(const Vector3 vector, const double scalar);
+    friend Vector3 operator *(const double scalar, const Vector3 vector);
+    friend Vector3 operator /(const Vector3 vector, const double scalar);
 
-    inline Vector3& operator /=(const Vector3& vector)
-    {
-        this->v_[0] /= vector.v_[0];
-        this->v_[1] /= vector.v_[1];
-        this->v_[2] /= vector.v_[2];
-        return *this;
-    }
-
-    inline Vector3& operator /=(double Scalar)
-    {
-        this->v_[0] /= Scalar;
-        this->v_[1] /= Scalar;
-        this->v_[2] /= Scalar;
-        return *this;
-    }
-
-    inline Vector3 operator +(const Vector3& vector)
-    {
-        Vector3 temp(*this);
-        temp += vector;
-        return temp;
-    }
-
-    inline Vector3 operator -(const Vector3& vector)
-    {
-        Vector3 temp(*this);
-        temp -= vector;
-        return temp;
-    }
-
-    inline Vector3 operator *(const Vector3& vector)
-    {
-        Vector3 temp(*this);
-        temp *= vector;
-        return temp;
-    }
-
-
-    inline Vector3 operator /(const Vector3& vector)
-    {
-        Vector3 temp(*this);
-        temp /= vector;
-        return temp;
-    }
-
-    inline double operator[](int idx) const
-    {
-        return v_[idx];
-    }
-
-    inline friend std::ostream& operator<<(std::ostream& stream, const Vector3& vector)
-    {
-        stream << "(" << vector.v_[0] << ", " << vector.v_[1] << ", "  << vector.v_[2] << ")";
-        return stream;
-    }
-
-    inline friend Vector3 operator +(const Vector3 v1, Vector3& v2)
-    {
-        return v1 + v2;
-    }
-
-    inline friend Vector3 operator *(const Vector3 vector, const double scalar)
-    {
-        return {vector.v_[0] * scalar, vector.v_[1] * scalar, vector.v_[2] * scalar};
-    }
-
-    inline friend Vector3 operator *(const double scalar, const Vector3 vector) { return vector * scalar; }
-
-    inline friend Vector3 operator /(const Vector3 vector, const double scalar)
-    {
-        return {vector.v_[0] / scalar, vector.v_[1] / scalar, vector.v_[2] / scalar};
-    }
-
-
+    static double Dot(const Vector3& a, const Vector3& b);
 
     static const Vector3 UnitX;
     static const Vector3 UnitY;
