@@ -45,7 +45,7 @@ void TGAWrite(const std::string& filename, uint32_t width, uint32_t height, uint
     {
         for(uint32_t j = 0; j < height; ++j)
         {
-            uint32_t idx = j * width * channels + i * channels;
+            uint32_t idx = i * height * channels + j * channels;
             for(int n = 0; n < channels; n++)
                 file << data_bgr[idx + n];
         }
