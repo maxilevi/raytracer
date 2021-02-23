@@ -3,4 +3,7 @@ project(raytracer)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(raytracer src/main.cpp src/Vector3.cpp src/Vector3.h src/Ray.cpp src/Ray.h src/Sphere.cpp src/Sphere.h)
+file(GLOB CPP_FILES src/*.cpp)
+file(GLOB H_FILES src/*.h)
+
+add_executable(raytracer ${CPP_FILES} ${H_FILES})
