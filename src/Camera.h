@@ -10,19 +10,22 @@
 
 class Camera {
 public:
-    Camera(int width, int height) : width(width), height(height) {
+    Camera(uint32_t width, uint32_t height) : width(width), height(height) {
         this->colors = std::unique_ptr<Vector3[]>(new Vector3[width * height]);
     };
 
     void Draw();
     void SetBackgroundColor(Vector3 color);
     void SetBackgroundGradient();
-    Vector3 const * const GetFrame();
 
+    /* Accessors and mutators */
+    inline uint32_t Width() const { return width; }
+    inline uint32_t Height() const { return height; }
+    inline Vector3 const * const GetFrame() const { return this->colors.get(); }
 
 private:
-    int width;
-    int height;
+    uint32_t width;
+    uint32_t height;
     std::unique_ptr<Vector3[]> colors;
 };
 
