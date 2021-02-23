@@ -7,7 +7,8 @@
 
 Vector3 Color(Ray& ray)
 {
-    return {1, 0, 1};
+    auto end = ray.Direction() * 0.5 + Vector3::One * 0.5;
+    return end.Normalized();
 }
 
 void Camera::Draw()
@@ -15,14 +16,14 @@ void Camera::Draw()
     Vector3 origin(0, 0, 0);
     Vector3 screenOrigin(-1, -1, -1);
 
-    for (int i = 0; i < width; ++i)
+    for (uint32_t i = 0; i < width; ++i)
     {
-        for (int j = 0; j < height; ++j)
+        for (uint32_t j = 0; j < height; ++j)
         {
             double u = (double)i / width;
             double v = (double)j / height;
-            Ray r(origin, screenOrigin + Vector3::UnitX * u + Vector3::UnitY * v);
-            this->colors[i * width + j] = Color(r);
+            Ray r(origin, screenOrigin + Vector3::UnitX * u * 2 + Vector3::UnitY * v * 2);
+            this->colors[i * height + j] = Color(r);
         }
     }
 }
@@ -30,9 +31,4 @@ void Camera::Draw()
 void Camera::SetBackgroundColor(Vector3 color)
 {
 
-}
-
-Vector3 const *const Camera::GetFrame()
-{
-    return this->colors.get();
 }
