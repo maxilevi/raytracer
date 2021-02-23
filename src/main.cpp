@@ -15,7 +15,7 @@ void WriteOutput(const std::string& path, const Camera& camera)
         {
             for(uint32_t c = 0; c < channels; ++c)
             {
-                bgr_frame[i * camera.Height() * channels + j * channels + c] = (uint8_t) (frame[i * camera.Height() + j][c] * 255);
+                bgr_frame[j * camera.Width() * channels + i * channels + c] = (uint8_t) (frame[j * camera.Width() + i][c] * 255);
             }
         }
     }
