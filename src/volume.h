@@ -9,9 +9,16 @@
 #include "vector3.h"
 #include "ray.h"
 
-class IDrawableObject {
+struct HitResult
+{
+    float t = 0;
+    Vector3 point;
+    Vector3 normal;
+};
+
+class Volume {
 public:
-    virtual bool Hit(const Ray& ray, double t_min, double t_max, ) const = 0;
+    virtual bool Hit(const Ray& ray, double t_min, double t_max, HitResult& record) const = 0;
 };
 
 
