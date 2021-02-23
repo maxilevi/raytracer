@@ -13,68 +13,68 @@ public:
     Vector3() {};
 
     Vector3(double x, double y, double z) {
-        v[0] = x;
-        v[1] = y;
-        v[2] = z;
+        v_[0] = x;
+        v_[1] = y;
+        v_[2] = z;
     };
 
     Vector3 Normalized();
     void Normalize();
-    inline double LengthSquared() const { return (v[0] * v[0] + v[1] * v[1] + v[2] * v[2]); }
+    inline double LengthSquared() const { return (v_[0] * v_[0] + v_[1] * v_[1] + v_[2] * v_[2]); }
     inline double Length() const { return std::sqrt(LengthSquared()); }
 
-    inline double X() const { return v[0]; }
-    inline double Y() const { return v[1]; }
-    inline double Z() const { return v[2]; }
+    inline double X() const { return v_[0]; }
+    inline double Y() const { return v_[1]; }
+    inline double Z() const { return v_[2]; }
 
     inline Vector3& operator +() { return *this; }
-    inline Vector3 operator -() { return {-v[0], -v[1], -v[2]}; }
+    inline Vector3 operator -() { return {-v_[0], -v_[1], -v_[2]}; }
 
     inline Vector3& operator +=(const Vector3& vector)
     {
-        this->v[0] -= vector.v[0];
-        this->v[1] -= vector.v[1];
-        this->v[2] -= vector.v[2];
+        this->v_[0] -= vector.v_[0];
+        this->v_[1] -= vector.v_[1];
+        this->v_[2] -= vector.v_[2];
         return *this;
     }
 
     inline Vector3& operator -=(const Vector3& vector)
     {
-        this->v[0] += vector.v[0];
-        this->v[1] += vector.v[1];
-        this->v[2] += vector.v[2];
+        this->v_[0] += vector.v_[0];
+        this->v_[1] += vector.v_[1];
+        this->v_[2] += vector.v_[2];
         return *this;
     }
 
     inline Vector3& operator *=(const Vector3& vector)
     {
-        this->v[0] *= vector.v[0];
-        this->v[1] *= vector.v[1];
-        this->v[2] *= vector.v[2];
+        this->v_[0] *= vector.v_[0];
+        this->v_[1] *= vector.v_[1];
+        this->v_[2] *= vector.v_[2];
         return *this;
     }
 
     inline Vector3& operator *=(const double scalar)
     {
-        this->v[0] *= scalar;
-        this->v[1] *= scalar;
-        this->v[2] *= scalar;
+        this->v_[0] *= scalar;
+        this->v_[1] *= scalar;
+        this->v_[2] *= scalar;
         return *this;
     }
 
     inline Vector3& operator /=(const Vector3& vector)
     {
-        this->v[0] /= vector.v[0];
-        this->v[1] /= vector.v[1];
-        this->v[2] /= vector.v[2];
+        this->v_[0] /= vector.v_[0];
+        this->v_[1] /= vector.v_[1];
+        this->v_[2] /= vector.v_[2];
         return *this;
     }
 
     inline Vector3& operator /=(double Scalar)
     {
-        this->v[0] /= Scalar;
-        this->v[1] /= Scalar;
-        this->v[2] /= Scalar;
+        this->v_[0] /= Scalar;
+        this->v_[1] /= Scalar;
+        this->v_[2] /= Scalar;
         return *this;
     }
 
@@ -109,12 +109,12 @@ public:
 
     inline double operator[](int idx) const
     {
-        return v[idx];
+        return v_[idx];
     }
 
     inline friend std::ostream& operator<<(std::ostream& stream, const Vector3& vector)
     {
-        stream << "(" << vector.v[0] << ", " << vector.v[1] << ", "  << vector.v[2] << ")";
+        stream << "(" << vector.v_[0] << ", " << vector.v_[1] << ", "  << vector.v_[2] << ")";
         return stream;
     }
 
@@ -125,12 +125,14 @@ public:
 
     inline friend Vector3 operator *(const Vector3 vector, const double scalar)
     {
-        return {vector.v[0] * scalar, vector.v[1] * scalar, vector.v[2] * scalar};
+        return {vector.v_[0] * scalar, vector.v_[1] * scalar, vector.v_[2] * scalar};
     }
+
+    inline friend Vector3 operator *(const double scalar, const Vector3 vector) { return vector * scalar; }
 
     inline friend Vector3 operator /(const Vector3 vector, const double scalar)
     {
-        return {vector.v[0] / scalar, vector.v[1] / scalar, vector.v[2] / scalar};
+        return {vector.v_[0] / scalar, vector.v_[1] / scalar, vector.v_[2] / scalar};
     }
 
 
@@ -143,7 +145,7 @@ public:
 
 
 private:
-    double v[3];
+    double v_[3];
 };
 
 #endif //RAYTRACER_VECTOR3_H

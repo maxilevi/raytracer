@@ -7,23 +7,26 @@
 
 Vector3 Color(Ray& ray)
 {
-    auto end = ray.Direction() * 0.5 + Vector3::One * 0.5;
-    return end.Normalized();
+    auto unitDir = ray.Direction().Normalized();
+    auto end = 0.5 * (ray.Direction().Normalized() + Vector3::One);
+    return end;
 }
 
 void Camera::Draw()
 {
     Vector3 origin(0, 0, 0);
-    Vector3 screenOrigin(-1, -1, -1);
+    Vector3 screen(-2, -1, -1);
+    Vector3 stepX(4, 0, 0);
+    Vector3 stepY(0, 2, 0);
 
-    for (uint32_t i = 0; i < width; ++i)
+    for (uint32_t i = 0; i < width_; ++i)
     {
-        for (uint32_t j = 0; j < height; ++j)
+        for (uint32_t j = 0; j < height_; ++j)
         {
-            double u = (double)i / width;
-            double v = (double)j / height;
-            Ray r(origin, screenOrigin + Vector3::UnitX * u * 2 + Vector3::UnitY * v * 2);
-            this->colors[i * height + j] = Color(r);
+            double u = (double)i / width_;
+            double v = (double)j / height_;
+            Ray r(origin, screen + stepX * u + stepY * v);
+            this->colors_[i * height_ + j] = Color(r);
         }
     }
 }
