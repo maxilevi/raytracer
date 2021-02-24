@@ -7,6 +7,7 @@
 
 
 #include "Vector3.h"
+#include "scene.h"
 
 class Camera {
 public:
@@ -14,7 +15,7 @@ public:
         this->colors_ = std::unique_ptr<Vector3[]>(new Vector3[width * height]);
     };
 
-    void Draw();
+    void Draw(Scene&);
     void SetBackgroundColor(Vector3 color);
     void SetBackgroundGradient();
 

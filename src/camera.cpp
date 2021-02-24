@@ -4,15 +4,24 @@
 
 #include "Camera.h"
 #include "Ray.h"
+#include <limits>
 
-Vector3 Color(Ray& ray)
+Vector3 Color(const Scene& scene, const Ray& ray)
 {
-    auto unit_dir = ray.Direction().Normalized();
-    double t = 0.5 * (unit_dir.Y() + 1.0);
-    return (1.0 - t) * Vector3::One + t * Vector3(0.5, 0.7, 1.0);
+    HitResult result;
+    if (scene.Hit(ray, 0.0, std::numeric_limits<double>::max(), result))
+    {
+        return 0.5 * (result.Normal + Vector3::One);
+    }
+    else
+    {
+        auto unit_dir = ray.Direction().Normalized();
+        double t = 0.5 * (unit_dir.Y() + 1.0);
+        return (1.0 - t) * Vector3::One + t * Vector3(0.5, 0.7, 1.0);
+    }
 }
 
-void Camera::Draw()
+void Camera::Draw(Scene& scene)
 {
     Vector3 origin(0, 0, 0);
     Vector3 screen(-2, -1, -1);
@@ -26,7 +35,7 @@ void Camera::Draw()
             double u = double(i) / double(width_);
             double v = double(j) / double(height_);
             Ray r(origin, screen + step_x * u + step_y * v);
-            this->colors_[j * width_ + iZ] = Color(r);
+            this->colors_[j * width_ + i] = Color(scene, r);
         }
     }
 }
