@@ -11,7 +11,7 @@
 class Sphere : public Volume  {
 public:
     Sphere(Vector3 center, double radius) : center_(center), radius_(radius) {}
-    bool Hit(const Ray& ray, double t_min, double t_max, VolumeHit& record) const override;
+    bool Hit(const Ray& ray, double t_min, double t_max, HitResult& record) const override;
 
     /* Accessors and mutators */
     inline double Radius() const { return radius_; }

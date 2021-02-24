@@ -11,9 +11,9 @@
 
 struct HitResult
 {
-    float t = 0;
-    Vector3 point;
-    Vector3 normal;
+    double t = 0;
+    Vector3 Point;
+    Vector3 Normal;
 };
 
 class Volume {
