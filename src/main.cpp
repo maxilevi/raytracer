@@ -3,6 +3,8 @@
 #include "Vector3.h"
 #include "Camera.h"
 #include "tga.h"
+#include "scene.h"
+#include "sphere.h"
 
 void WriteOutput(const std::string& path, const Camera& camera)
 {
@@ -24,9 +26,16 @@ void WriteOutput(const std::string& path, const Camera& camera)
 
 int main()
 {
+    Scene scene;
+
+    /* Fill scene */
+    Sphere sphere(Vector3(0, 0, 0), 1);
+    scene.Add(&sphere);
+
+    /* Camera */
     Camera camera(200, 100);
 
-    camera.Draw();
+    camera.Draw(scene);
 
     WriteOutput("./output.tga", camera);
 
