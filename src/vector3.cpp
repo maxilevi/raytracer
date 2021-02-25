@@ -32,17 +32,17 @@ double Vector3::Dot(const Vector3 &a, const Vector3 &b)
 
 Vector3& Vector3::operator +=(const Vector3& vector)
 {
-    this->v_[0] -= vector.v_[0];
-    this->v_[1] -= vector.v_[1];
-    this->v_[2] -= vector.v_[2];
+    this->v_[0] += vector.v_[0];
+    this->v_[1] += vector.v_[1];
+    this->v_[2] += vector.v_[2];
     return *this;
 }
 
 Vector3& Vector3::operator -=(const Vector3& vector)
 {
-    this->v_[0] += vector.v_[0];
-    this->v_[1] += vector.v_[1];
-    this->v_[2] += vector.v_[2];
+    this->v_[0] -= vector.v_[0];
+    this->v_[1] -= vector.v_[1];
+    this->v_[2] -= vector.v_[2];
     return *this;
 }
 
@@ -114,7 +114,7 @@ std::ostream& operator<<(std::ostream& stream, const Vector3& vector)
 
 Vector3 operator +(const Vector3 v1, Vector3& v2)
 {
-    return v1 + v2;
+    return {v1.v_[0] + v2.v_[0], v1.v_[1] + v2.v_[1], v1.v_[2] + v2.v_[2]};
 }
 
 Vector3 operator *(const Vector3 vector, const double scalar)

@@ -4,6 +4,15 @@
 
 #include "Sphere.h"
 
+bool Sphere::IsValidHit(const Ray &ray, double t, double t_min, double t_max, HitResult& record) const
+{
+    if (t >= t_max || t <= t_min) return false;
+    record.t = t;
+    record.Point = ray.Point(record.t);
+    record.Normal = (record.Point - this->Center()) / radius_;
+    return true;
+}
+
 bool Sphere::Hit(const Ray &ray, double t_min, double t_max, HitResult &record) const
 {
     /*
@@ -15,26 +24,18 @@ bool Sphere::Hit(const Ray &ray, double t_min, double t_max, HitResult &record) 
      * */
     auto oc = ray.Origin() - this->Center();
     double a = Vector3::Dot(ray.Direction(), ray.Direction());
-    double b = 2.0 * Vector3::Dot(oc, ray.Direction());
-    double c = Vector3::Dot(oc, oc) - radius_*radius_;
-    double discriminant = b*b - 4*a*c;
-    std::cout << discriminant << std::endl;
+    double b = Vector3::Dot(oc, ray.Direction());
+    double c = Vector3::Dot(oc, oc) - radius_ * radius_;
+    double discriminant = b*b - a*c;
     if (discriminant > 0)
     {
         double temp = (-b - sqrt(b * b - a * c)) / a;
-        if (temp < t_max && temp > t_min) {
-            record.t = temp;
-            record.Point = ray.Point(record.t);
-            record.Normal = (record.Point - this->Center()) / radius_;
+        if (IsValidHit(ray, temp, t_min, t_max, record))
             return true;
-        }
+
         temp = (-b + sqrt(b * b - a * c)) / a;
-        if (temp < t_max && temp > t_min) {
-            record.t = temp;
-            record.Point = ray.Point(record.t);
-            record.Normal = (record.Point - this->Center()) / radius_;
+        if (IsValidHit(ray, temp, t_min, t_max, record))
             return true;
-        }
     }
     return false;
 }

@@ -18,6 +18,7 @@ public:
     inline Vector3 Center() const { return center_; }
 
 private:
+    bool IsValidHit(const Ray &ray, double t, double t_min, double t_max, HitResult& record) const;
     double radius_;
     Vector3 center_;
 };

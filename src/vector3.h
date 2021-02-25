@@ -10,7 +10,7 @@
 
 class Vector3 {
 public:
-    Vector3() {};
+    Vector3(): Vector3(0, 0, 0) {};
 
     Vector3(double x, double y, double z) {
         v_[0] = x;

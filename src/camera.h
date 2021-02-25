@@ -6,11 +6,16 @@
 #define RAYTRACER_CAMERA_H
 
 
+#include <random>
 #include "Vector3.h"
 #include "scene.h"
 
 class Camera {
 public:
+    const int kAntialiasingSamples = 16;
+    const double kGamma = 1.5;
+    const int kMaxLightBounces = 8;
+
     Camera(uint32_t width, uint32_t height) : width_(width), height_(height) {
         this->colors_ = std::unique_ptr<Vector3[]>(new Vector3[width * height]);
     };
@@ -28,6 +33,9 @@ private:
     uint32_t width_;
     uint32_t height_;
     std::unique_ptr<Vector3[]> colors_;
+
+    Vector3 RandomPointOnUnitSphere(std::uniform_real_distribution<double> dist, std::mt19937 gen);
+    Vector3 Color(const Scene& scene, const Ray& ray, std::uniform_real_distribution<double> dist, std::mt19937 gen, int iteration = 0);
 };
 
 

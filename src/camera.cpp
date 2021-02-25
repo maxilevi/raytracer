@@ -6,12 +6,27 @@
 #include "Ray.h"
 #include <limits>
 
-Vector3 Color(const Scene& scene, const Ray& ray)
+const double PI = 3.14159265;
+
+Vector3 Camera::RandomPointOnUnitSphere(std::uniform_real_distribution<double> dist, std::mt19937 gen)
 {
+    double u1 = dist(gen);
+    double u2 = dist(gen);
+    double lambda = acos(2.0 * u1 - 1) - PI/2.0;
+    double phi = 2.0 * PI * u2;
+    return {std::cos(lambda) * std::cos(phi), std::cos(lambda) * std::sin(phi), std::sin(lambda)};
+}
+
+Vector3 Camera::Color(const Scene& scene, const Ray& ray, std::uniform_real_distribution<double> dist, std::mt19937 gen, int iteration)
+{
+    if (iteration == Camera::kMaxLightBounces)
+        return {1, 1, 1};
+
     HitResult result;
-    if (scene.Hit(ray, 0.0, std::numeric_limits<double>::max(), result))
+    if (scene.Hit(ray, 0.001, std::numeric_limits<double>::max(), result))
     {
-        return 0.5 * (result.Normal + Vector3::One);
+        Vector3 target = result.Point + result.Normal + RandomPointOnUnitSphere(dist, gen);
+        return 0.5 * Color(scene, Ray(result.Point, target - result.Point), dist, gen, iteration + 1);
     }
     else
     {
@@ -23,19 +38,31 @@ Vector3 Color(const Scene& scene, const Ray& ray)
 
 void Camera::Draw(Scene& scene)
 {
+    double screen_ratio = (double(width_) / double(height_));
     Vector3 origin(0, 0, 0);
-    Vector3 screen(-2, -1, -1);
-    Vector3 step_x(4, 0, 0);
+    Vector3 screen(-screen_ratio, -1, -1);
+    Vector3 step_x(std::abs(screen_ratio) * 2.0, 0, 0);
     Vector3 step_y(0, 2, 0);
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<double> dist(0.0, 1.0);
 
-    for (int32_t i = 0; i < width_; ++i)
+    for (int32_t j = height_-1; j > -1; --j)
     {
-        for (int32_t j = height_-1; j > -1; --j)
+        for (int32_t i = 0; i < width_; ++i)
         {
-            double u = double(i) / double(width_);
-            double v = double(j) / double(height_);
-            Ray r(origin, screen + step_x * u + step_y * v);
-            this->colors_[j * width_ + i] = Color(scene, r);
+            Vector3 color(0, 0, 0);
+            for(int s = 0; s < Camera::kAntialiasingSamples; ++s)
+            {
+                double noise = dist(gen);
+                double u = (i + noise) / double(width_);
+                double v = (j + noise) / double(height_);
+
+                Ray r(origin, screen + step_x * u + step_y * v);
+                color += Color(scene, r, dist, gen);
+            }
+            color /= Camera::kAntialiasingSamples;
+            this->colors_[j * width_ + i] = Vector3(std::pow(color.X(), 1.0/kGamma), std::pow(color.Y(), 1.0 / kGamma), std::pow(color.Z(), 1.0 / kGamma));
         }
     }
 }

@@ -5,6 +5,7 @@
 #include "tga.h"
 #include "scene.h"
 #include "sphere.h"
+#include <chrono>
 
 void WriteOutput(const std::string& path, const Camera& camera)
 {
@@ -15,9 +16,10 @@ void WriteOutput(const std::string& path, const Camera& camera)
     {
         for(uint32_t j = 0; j < camera.Height(); ++j)
         {
-            for(uint32_t c = 0; c < channels; ++c)
+
+            for(int c_src = channels-1; c_src > -1; --c_src)
             {
-                bgr_frame[j * camera.Width() * channels + i * channels + c] = (uint8_t) (frame[j * camera.Width() + i][c] * 255);
+                bgr_frame[j * camera.Width() * channels + i * channels + (channels - c_src - 1)] = (uint8_t) (frame[j * camera.Width() + i][c_src] * 255);
             }
         }
     }
@@ -29,13 +31,19 @@ int main()
     Scene scene;
 
     /* Fill scene */
-    Sphere sphere(Vector3(0, 0, 0), 1);
+    Sphere sphere(Vector3(0, 0, -1), 0.5);
     scene.Add(&sphere);
+    Sphere floor(Vector3(0, -100.5, -1), 100);
+    scene.Add(&floor);
 
     /* Camera */
-    Camera camera(200, 100);
+    Camera camera(1920, 1080);
 
+    auto t1 = std::chrono::high_resolution_clock::now();
     camera.Draw(scene);
+    auto t2 = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>( t2 - t1 ).count();
+    std::cout << "Drawing took " << duration << " ms";
 
     WriteOutput("./output.tga", camera);
 
