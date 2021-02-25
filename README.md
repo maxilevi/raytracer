@@ -1,5 +1,9 @@
 # raytracer
 
+# eye candy
+
+![](screenshots/diffuse_big.png)
+
 # how it works
 
 ## overview
