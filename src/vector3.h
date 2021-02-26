@@ -33,24 +33,25 @@ public:
     Vector3& operator +=(const Vector3& vector);
     Vector3& operator -=(const Vector3& vector);
     Vector3& operator *=(const Vector3& vector);
-    Vector3& operator *=(const double scalar);
+    Vector3& operator *=(double scalar);
     Vector3& operator /=(const Vector3& vector);
     Vector3& operator /=(double Scalar);
 
     Vector3 operator +(const Vector3& vector);
-    Vector3 operator -(const Vector3& vector);
     Vector3 operator *(const Vector3& vector);
     Vector3 operator /(const Vector3& vector);
 
     inline double operator[](int idx) const { return v_[idx]; }
 
     friend std::ostream& operator<<(std::ostream& stream, const Vector3& vector);
-    friend Vector3 operator +(const Vector3 v1, Vector3& v2);
-    friend Vector3 operator *(const Vector3 vector, const double scalar);
-    friend Vector3 operator *(const double scalar, const Vector3 vector);
-    friend Vector3 operator /(const Vector3 vector, const double scalar);
+    friend Vector3 operator +(Vector3 v1, Vector3& v2);
+    friend Vector3 operator -(Vector3 v1, Vector3 v2);
+    friend Vector3 operator *(Vector3 vector, double scalar);
+    friend Vector3 operator *(double scalar, Vector3 vector);
+    friend Vector3 operator /(Vector3 vector, double scalar);
 
     static double Dot(const Vector3& a, const Vector3& b);
+    static Vector3 Cross(const Vector3& a, const Vector3& b);
 
     static const Vector3 UnitX;
     static const Vector3 UnitY;

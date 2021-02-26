@@ -29,6 +29,14 @@ double Vector3::Dot(const Vector3 &a, const Vector3 &b)
     return a.v_[0] * b.v_[0] + a.v_[1] * b.v_[1] + a.v_[2] * b.v_[2];
 }
 
+Vector3 Vector3::Cross(const Vector3 &a, const Vector3 &b)
+{
+    return {
+        a.v_[1] * b.v_[2] - a.v_[2] * b.v_[1],
+        a.v_[0] * b.v_[2] - a.v_[1] * b.v_[0],
+        a.v_[0] * b.v_[1] - a.v_[1] * b.v_[0]
+    };
+}
 
 Vector3& Vector3::operator +=(const Vector3& vector)
 {
@@ -85,13 +93,6 @@ Vector3 Vector3::operator +(const Vector3& vector)
     return temp;
 }
 
-Vector3 Vector3::operator -(const Vector3& vector)
-{
-    Vector3 temp(*this);
-    temp -= vector;
-    return temp;
-}
-
 Vector3 Vector3::operator *(const Vector3& vector)
 {
     Vector3 temp(*this);
@@ -130,4 +131,9 @@ Vector3 operator *(const double scalar, const Vector3 vector)
 Vector3 operator /(const Vector3 vector, const double scalar)
 {
     return {vector.v_[0] / scalar, vector.v_[1] / scalar, vector.v_[2] / scalar};
+}
+
+Vector3 operator-(Vector3 v1, Vector3 v2)
+{
+    return {v1.v_[0] - v2.v_[0], v1.v_[1] - v2.v_[1], v1.v_[2] - v2.v_[2]};
 }
