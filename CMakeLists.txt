@@ -3,7 +3,6 @@ project(raytracer)
 
 set(CMAKE_CXX_STANDARD 11)
 
-file(GLOB CPP_FILES src/*.cpp)
-file(GLOB H_FILES src/*.h)
+file(GLOB FILES src/volumes/*.h src/volumes/*.cpp src/*.cpp src/*.h)
 
-add_executable(raytracer ${CPP_FILES} ${H_FILES})
+add_executable(raytracer ${FILES})
