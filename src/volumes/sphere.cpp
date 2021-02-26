@@ -2,7 +2,7 @@
  * Created by Maximiliano Levi on 16/02/2021.
  */
 
-#include "Sphere.h"
+#include "sphere.h"
 
 bool Sphere::IsValidHit(const Ray &ray, double t, double t_min, double t_max, HitResult& record) const
 {

@@ -6,7 +6,7 @@
 #define RAYTRACER_SPHERE_H
 
 
-#include "volume.h"
+#include "../volume.h"
 
 class Sphere : public Volume  {
 public:

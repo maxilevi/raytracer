@@ -4,7 +4,7 @@
 #include "Camera.h"
 #include "tga.h"
 #include "scene.h"
-#include "sphere.h"
+#include "volumes/sphere.h"
 #include <chrono>
 
 void WriteOutput(const std::string& path, const Camera& camera)
@@ -37,7 +37,7 @@ int main()
     scene.Add(&floor);
 
     /* Camera */
-    Camera camera(1920, 1080);
+    Camera camera(480, 270);
 
     auto t1 = std::chrono::high_resolution_clock::now();
     camera.Draw(scene);

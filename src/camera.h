@@ -14,7 +14,7 @@ class Camera {
 public:
     const int kAntialiasingSamples = 16;
     const double kGamma = 1.5;
-    const int kMaxLightBounces = 8;
+    const int kMaxLightBounces = 20;
 
     Camera(uint32_t width, uint32_t height) : width_(width), height_(height) {
         this->colors_ = std::unique_ptr<Vector3[]>(new Vector3[width * height]);
