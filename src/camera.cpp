@@ -17,22 +17,27 @@ Vector3 Camera::RandomPointOnUnitSphere(std::uniform_real_distribution<double> d
     return {std::cos(lambda) * std::cos(phi), std::cos(lambda) * std::sin(phi), std::sin(lambda)};
 }
 
+Vector3 BackgroundColor(const Ray& ray)
+{
+    auto unit_dir = ray.Direction().Normalized();
+    double t = 0.5 * (unit_dir.Y() + 1.0);
+    return (1.0 - t) * Vector3::One + t * Vector3(0.5, 0.7, 1.0);
+}
+
 Vector3 Camera::Color(const Scene& scene, const Ray& ray, std::uniform_real_distribution<double> dist, std::mt19937 gen, int iteration)
 {
     if (iteration == Camera::kMaxLightBounces)
-        return {1, 1, 1};
+        return {0, 0, 0};
 
     HitResult result;
-    if (scene.Hit(ray, 0.001, std::numeric_limits<double>::max(), result))
+    if (scene.Hit(ray, 0.01, std::numeric_limits<double>::max(), result))
     {
         Vector3 target = result.Point + result.Normal + RandomPointOnUnitSphere(dist, gen);
         return 0.5 * Color(scene, Ray(result.Point, target - result.Point), dist, gen, iteration + 1);
     }
     else
     {
-        auto unit_dir = ray.Direction().Normalized();
-        double t = 0.5 * (unit_dir.Y() + 1.0);
-        return (1.0 - t) * Vector3::One + t * Vector3(0.5, 0.7, 1.0);
+        return BackgroundColor(ray);
     }
 }
 
