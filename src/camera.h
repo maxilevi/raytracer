@@ -36,6 +36,7 @@ private:
 
     Vector3 RandomPointOnUnitSphere(std::uniform_real_distribution<double> dist, std::mt19937 gen);
     Vector3 Color(const Scene& scene, const Ray& ray, std::uniform_real_distribution<double> dist, std::mt19937 gen, int iteration = 0);
+    void NormalizeFrame();
 };
 
 
