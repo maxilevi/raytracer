@@ -1,6 +1,8 @@
 # raytracer
 
-# eye candy
+wip raytracer written from scratch in C++. the program processes a defined scene then rasterizes it and outputs a `.tga` file. future versions will allow the loading of 3d `.ply` models.
+
+# eye-candy
 
 ![](screenshots/diffuse_big.png)
 
@@ -20,6 +22,12 @@ to avoid image "rough edges" on the rendering we cast multiple rays per pixel wi
 
 ## effects
 
-# code style
+# other
 
-it follows [Google's C++ style guide](https://google.github.io/styleguide/cppguide.html)
+## c++ version
+
+i am using C++ 17 to take advantage of `std::execution`
+
+## code style
+
+it tries to follow [Google's C++ style guide](https://google.github.io/styleguide/cppguide.html)
