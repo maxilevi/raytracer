@@ -85,7 +85,7 @@ void Camera::Draw(Scene& scene)
         }
     }
 
-    std::for_each(std::execution::seq, params.begin(), params.end(), [&](std::pair<int, int> pair)
+    std::for_each(std::execution::par_unseq, params.begin(), params.end(), [&](std::pair<int, int> pair)
     {
         auto [i, j] = pair;
         double noise = dist(gen);

@@ -2,7 +2,7 @@
 #include <fstream>
 #include "Vector3.h"
 #include "Camera.h"
-#include "tga.h"
+#include "io/tga.h"
 #include "scene.h"
 #include "volumes/sphere.h"
 #include <chrono>
