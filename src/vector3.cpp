@@ -62,7 +62,7 @@ Vector3& Vector3::operator *=(const Vector3& vector)
     return *this;
 }
 
-Vector3& Vector3::operator *=(const double scalar)
+Vector3& Vector3::operator *=(const double& scalar)
 {
     this->v_[0] *= scalar;
     this->v_[1] *= scalar;
@@ -78,7 +78,7 @@ Vector3& Vector3::operator /=(const Vector3& vector)
     return *this;
 }
 
-Vector3& Vector3::operator /=(double Scalar)
+Vector3& Vector3::operator /=(const double& Scalar)
 {
     this->v_[0] /= Scalar;
     this->v_[1] /= Scalar;
@@ -86,54 +86,8 @@ Vector3& Vector3::operator /=(double Scalar)
     return *this;
 }
 
-Vector3 Vector3::operator +(const Vector3& vector)
-{
-    Vector3 temp(*this);
-    temp += vector;
-    return temp;
-}
-
-Vector3 Vector3::operator *(const Vector3& vector)
-{
-    Vector3 temp(*this);
-    temp *= vector;
-    return temp;
-}
-
-Vector3 Vector3::operator /(const Vector3& vector)
-{
-    Vector3 temp(*this);
-    temp /= vector;
-    return temp;
-}
-
 std::ostream& operator<<(std::ostream& stream, const Vector3& vector)
 {
     stream << "(" << vector.v_[0] << ", " << vector.v_[1] << ", "  << vector.v_[2] << ")";
     return stream;
-}
-
-Vector3 operator +(const Vector3 v1, Vector3& v2)
-{
-    return {v1.v_[0] + v2.v_[0], v1.v_[1] + v2.v_[1], v1.v_[2] + v2.v_[2]};
-}
-
-Vector3 operator *(const Vector3 vector, const double scalar)
-{
-    return {vector.v_[0] * scalar, vector.v_[1] * scalar, vector.v_[2] * scalar};
-}
-
-Vector3 operator *(const double scalar, const Vector3 vector)
-{
-    return vector * scalar;
-}
-
-Vector3 operator /(const Vector3 vector, const double scalar)
-{
-    return {vector.v_[0] / scalar, vector.v_[1] / scalar, vector.v_[2] / scalar};
-}
-
-Vector3 operator-(Vector3 v1, Vector3 v2)
-{
-    return {v1.v_[0] - v2.v_[0], v1.v_[1] - v2.v_[1], v1.v_[2] - v2.v_[2]};
 }
