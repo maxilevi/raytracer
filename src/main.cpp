@@ -33,6 +33,9 @@ void WriteOutput(const std::string& path, const Camera& camera)
 int main()
 {
     Scene scene;
+
+    auto t1 = std::chrono::high_resolution_clock::now();
+
     std::unique_ptr<Triangle[]> tris;
     auto tri_count = LoadPLY("./../models/aurelius-low.ply", tris);
     if (!tri_count) return 1;
@@ -55,10 +58,10 @@ int main()
     /* Camera */
     Camera camera(480, 270);
 
-    auto t1 = std::chrono::high_resolution_clock::now();
+    t1 = std::chrono::high_resolution_clock::now();
     camera.Draw(scene);
-    auto t2 = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>( t2 - t1 ).count();
+    t2 = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::milliseconds>( t2 - t1 ).count();
     std::cout << "Drawing took " << duration << " ms";
 
     WriteOutput("./output.tga", camera);
