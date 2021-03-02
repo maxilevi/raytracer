@@ -1,9 +1,8 @@
 /*
  * Created by Maximiliano Levi on 21/02/2021.
  */
-
-#include "Camera.h"
-#include "Ray.h"
+#include "defines.h"
+#include "camera.h"
 #include <limits>
 #include <execution>
 
