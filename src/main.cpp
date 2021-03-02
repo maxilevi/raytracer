@@ -34,15 +34,20 @@ int main()
 {
     Scene scene;
     std::unique_ptr<Triangle[]> tris;
-    auto tri_count = LoadPLY("./../models/icosphere.ply", tris);
+    auto tri_count = LoadPLY("./../models/aurelius-low.ply", tris);
     if (!tri_count) return 1;
 
     std::cout << "Loaded " << tri_count << " triangles" << std::endl;
+
     for (uint32_t i = 0; i < tri_count; ++i) {
         tris[i].Scale(Vector3(0.5));
         tris[i].Translate(Vector3(0, 0, -1));
         scene.Add(&tris[i]);
     }
+
+    auto t2 = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>( t2 - t1 ).count();
+    std::cout << "Loading the model took " << duration << " ms";
 
     Sphere floor(Vector3(0, -100.5, -1), 100);
     scene.Add(&floor);
