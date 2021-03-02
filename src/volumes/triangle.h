@@ -8,7 +8,7 @@
 
 #include "../vector3.h"
 #include "../ray.h"
-#include "../volume.h"
+#include "volume.h"
 
 class Triangle : public Volume {
 public:
@@ -37,6 +37,7 @@ public:
     };
 
     bool Hit(const Ray& ray, double t_min, double t_max, HitResult& record) const override;
+    bool BoundingBox(AABB& bounding_box) const override;
     void Translate(Vector3 offset);
     void Scale(Vector3 scale);
 
