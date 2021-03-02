@@ -10,19 +10,16 @@ bool Scene::Add(Volume* volume)
     return false;
 }
 
-Volume *Scene::operator[](int idx)
-{
-    return this->volumes_[idx];
-}
-
 bool Scene::Hit(const Ray &ray, double t_min, double t_max, HitResult &record) const
 {
     HitResult temp;
     bool any_hit = false;
     double closest_so_far = t_max;
-    for (int i = 0; i < Size(); ++i)
+    auto* volumes = &this->volumes_.front();
+    const uint32_t size = this->volumes_.size();
+    for (int i = 0; i < size; ++i)
     {
-        if(this->volumes_[i]->Hit(ray, t_min, closest_so_far, temp))
+        if(volumes[i]->Hit(ray, t_min, closest_so_far, temp))
         {
             any_hit = true;
             closest_so_far = temp.t;
@@ -30,4 +27,22 @@ bool Scene::Hit(const Ray &ray, double t_min, double t_max, HitResult &record) c
         }
     }
     return any_hit;
+}
+
+bool Scene::BoundingBox(AABB &output_box) const
+{
+    if (volumes_.empty()) return false;
+
+    AABB temp_box;
+    bool first_box = true;
+
+    for (const auto& object : volumes_)
+    {
+        if (!object->BoundingBox(temp_box))
+            return false;
+        output_box = first_box ? temp_box : AABB::Merge(output_box, temp_box);
+        first_box = false;
+    }
+
+    return true;
 }

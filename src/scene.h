@@ -6,15 +6,14 @@
 #define RAYTRACER_SCENE_H
 
 
-#include "volume.h"
+#include "volumes/volume.h"
 #include <vector>
 
-class Scene {
+class Scene : public Volume {
 public:
     bool Add(Volume*);
-    bool Hit(const Ray& ray, double t_min, double t_max, HitResult& record) const;
-    Volume* operator[](int idx);
-    uint64_t Size() const { return volumes_.size(); }
+    bool Hit(const Ray& ray, double t_min, double t_max, HitResult& record) const override;
+    bool BoundingBox(AABB& output_box) const override;
 
 private:
     std::vector<Volume*> volumes_;
