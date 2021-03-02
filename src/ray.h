@@ -6,7 +6,7 @@
 #define RAYTRACER_RAY_H
 
 
-#include "Vector3.h"
+#include "vector3.h"
 
 class Ray {
 public:

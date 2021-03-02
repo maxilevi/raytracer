@@ -2,7 +2,7 @@
  * Created by Maximiliano Levi on 16/02/2021.
  */
 
-#include "Vector3.h"
+#include "vector3.h"
 
 const Vector3 Vector3::UnitX = Vector3(1, 0, 0);
 const Vector3 Vector3::UnitY = Vector3(0, 1, 0);
@@ -33,7 +33,7 @@ Vector3 Vector3::Cross(const Vector3 &a, const Vector3 &b)
 {
     return {
         a.v_[1] * b.v_[2] - a.v_[2] * b.v_[1],
-        a.v_[0] * b.v_[2] - a.v_[1] * b.v_[0],
+        -(a.v_[0] * b.v_[2] - a.v_[2] * b.v_[0]),
         a.v_[0] * b.v_[1] - a.v_[1] * b.v_[0]
     };
 }
