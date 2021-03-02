@@ -10,11 +10,11 @@
 
 class Ray {
 public:
-    Ray();
+    Ray() = default;
     Ray(const Vector3& origin, const Vector3& direction) : origin_(origin), direction_(direction) {};
-    inline Vector3 Origin() const { return this->origin_; }
-    inline Vector3 Direction() const { return this->direction_; }
-    inline Vector3 Point(double t) const { return this->origin_ + this->direction_ * t; }
+    [[nodiscard]] inline const Vector3& Origin() const { return this->origin_; }
+    [[nodiscard]] inline const Vector3& Direction() const { return this->direction_; }
+    [[nodiscard]] inline Vector3 Point(double t) const { return this->origin_ + this->direction_ * t; }
 
 private:
     Vector3 origin_;
