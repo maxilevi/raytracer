@@ -25,7 +25,7 @@ Vector3 Camera::RandomPointOnUnitSphere(std::uniform_real_distribution<double> d
 
 Vector3 BackgroundColor(const Ray& ray)
 {
-    auto unit_dir = ray.Direction().Normalized();
+    auto unit_dir = Vector3(ray.Direction()).Normalized();
     double t = 0.5 * (unit_dir.Y() + 1.0);
     return (1.0 - t) * Vector3::One + t * Vector3(0.5, 0.7, 1.0);
 }
