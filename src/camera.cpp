@@ -3,8 +3,14 @@
  */
 #include "defines.h"
 #include "camera.h"
+#include "ray.h"
 #include <limits>
+#if USE_CUDA
+#include "tracer_gpu.cuh"
+#else
 #include <execution>
+#endif
+
 
 const double PI = 3.14159265;
 
@@ -52,7 +58,7 @@ void Camera::NormalizeFrame()
             /* Normalize the samples for antialiasing */
             color /= Camera::kAntialiasingSamples;
 
-            /* Gamma correction*/
+            /* Gamma correction */
             color = Vector3(std::pow(color.X(), 1.0/kGamma), std::pow(color.Y(), 1.0 / kGamma), std::pow(color.Z(), 1.0 / kGamma));
 
             this->colors_[j * width_ + i] = color;
@@ -60,7 +66,7 @@ void Camera::NormalizeFrame()
     }
 }
 
-void Camera::Draw(Scene& scene)
+void Camera::ProcessRays(Scene& scene, std::vector<std::pair<int, int>> params)
 {
     double screen_ratio = (double(width_) / double(height_));
     Vector3 origin(0, 0, 0);
@@ -70,6 +76,21 @@ void Camera::Draw(Scene& scene)
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<double> dist(0.0, 1.0);
+
+    std::for_each(std::execution::par_unseq, params.begin(), params.end(), [&](std::pair<int, int> pair)
+    {
+        auto [i, j] = pair;
+        double noise = dist(gen);
+        double u = (i + noise) / double(width_);
+        double v = (j + noise) / double(height_);
+
+        Ray r(origin, screen + step_x * u + step_y * v);
+        this->colors_[j * width_ + i] += Color(scene, r, dist, gen);
+    });
+}
+
+void Camera::Draw(Scene& scene)
+{
     std::vector<std::pair<int, int>> params;
 
     for (int32_t j = height_-1; j > -1; --j)
@@ -84,16 +105,7 @@ void Camera::Draw(Scene& scene)
         }
     }
 
-    std::for_each(std::execution::par_unseq, params.begin(), params.end(), [&](std::pair<int, int> pair)
-    {
-        auto [i, j] = pair;
-        double noise = dist(gen);
-        double u = (i + noise) / double(width_);
-        double v = (j + noise) / double(height_);
-
-        Ray r(origin, screen + step_x * u + step_y * v);
-        this->colors_[j * width_ + i] += Color(scene, r, dist, gen);
-    });
+    this->ProcessRays(scene, params);
 
     this->NormalizeFrame();
 }
