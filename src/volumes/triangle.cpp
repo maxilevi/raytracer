@@ -4,6 +4,7 @@
 
 #include "triangle.h"
 #include <limits>
+#include <algorithm>
 
 /*
  * Möller–Trumbore intersection algorithm
@@ -68,4 +69,19 @@ void Triangle::Scale(Vector3 scale)
 {
     for(auto & i : v_)
         i *= scale;
+}
+
+bool Triangle::BoundingBox(AABB &bounding_box) const
+{
+    Vector3 min(std::numeric_limits<double>::max()), max(std::numeric_limits<double>::min());
+    for(auto& v : v_)
+    {
+        for(int i = 0; i < 3; ++i)
+        {
+            min[i] = std::min(v[i], min[i]);
+            max[i] = std::max(v[i], max[i]);
+        }
+    }
+    bounding_box = AABB(min, max);
+    return true;
 }
