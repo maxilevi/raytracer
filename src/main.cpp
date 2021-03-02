@@ -1,11 +1,15 @@
+#include "defines.h"
 #include <iostream>
 #include <fstream>
-#include "Vector3.h"
-#include "Camera.h"
+#include "vector3.h"
+#include "camera.h"
 #include "io/tga.h"
+#include "io/ply.h"
 #include "scene.h"
 #include "volumes/sphere.h"
 #include <chrono>
+#include <string>
+#include <cstdint>
 
 void WriteOutput(const std::string& path, const Camera& camera)
 {
@@ -29,10 +33,17 @@ void WriteOutput(const std::string& path, const Camera& camera)
 int main()
 {
     Scene scene;
+    std::unique_ptr<Triangle[]> tris;
+    auto tri_count = LoadPLY("./../models/icosphere.ply", tris);
+    if (!tri_count) return 1;
 
-    /* Fill scene */
-    Sphere sphere(Vector3(0, 0, -1), 0.5);
-    scene.Add(&sphere);
+    std::cout << "Loaded " << tri_count << " triangles" << std::endl;
+    for (uint32_t i = 0; i < tri_count; ++i) {
+        tris[i].Scale(Vector3(0.5));
+        tris[i].Translate(Vector3(0, 0, -1));
+        scene.Add(&tris[i]);
+    }
+
     Sphere floor(Vector3(0, -100.5, -1), 100);
     scene.Add(&floor);
 
