@@ -11,12 +11,12 @@
 
 class Scene : public Volume {
 public:
-    bool Add(Volume*);
+    bool Add(std::shared_ptr<Volume>);
     bool Hit(const Ray& ray, double t_min, double t_max, HitResult& record) const override;
     bool BoundingBox(AABB& output_box) const override;
 
 private:
-    std::vector<Volume*> volumes_;
+    std::vector<std::shared_ptr<Volume>> volumes_;
 };
 
 

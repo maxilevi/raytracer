@@ -4,7 +4,7 @@
 
 #include "scene.h"
 
-bool Scene::Add(Volume* volume)
+bool Scene::Add(std::shared_ptr<Volume> volume)
 {
     this->volumes_.push_back(volume);
     return false;
