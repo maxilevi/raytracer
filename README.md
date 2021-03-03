@@ -1,6 +1,6 @@
 # raytracer
 
-wip raytracer written from scratch in C++. the program processes a defined scene then rasterizes it and outputs a `.tga` file. future versions will use CUDA.
+wip raytracer written from scratch in C++. the program processes a defined scene then rasterizes it and outputs a `.tga` file. future versions will use SSE.
 
 # eye-candy
 
