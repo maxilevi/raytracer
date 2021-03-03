@@ -5,11 +5,13 @@
 #ifndef RAYTRACER_PLY_H
 #define RAYTRACER_PLY_H
 
+#include <memory>
 #include <string>
 #include <fstream>
 #include <sstream>
 #include <regex>
 #include "../volumes/triangle.h"
+#include "../volumes/triangle_list.h"
 
 bool ProcessHeader(const std::string& line, bool& is_header, int& vertex_count, int& triangle_count, bool& has_vertices, bool& has_normals, bool& has_uvs)
 {
@@ -98,8 +100,9 @@ bool ProcessBody(const std::string& line, std::vector<Vector3>& vertices, std::v
 }
 
 
-uint32_t LoadPLY(const std::string& path, std::unique_ptr<Triangle[]>& triangles)
+std::unique_ptr<TriangleList> LoadPLY(const std::string& path)
 {
+    std::unique_ptr<Triangle[]> triangles;
     std::string token_buffer[9];
     std::vector<Vector3> vertices, normals;
     std::ifstream infile(path);
@@ -128,7 +131,7 @@ uint32_t LoadPLY(const std::string& path, std::unique_ptr<Triangle[]>& triangles
                 return 0;
         }
     }
-    return triangle_count;
+    return std::make_unique<TriangleList>(std::move(triangles), triangle_count);
 }
 
 
