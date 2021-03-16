@@ -40,7 +40,7 @@ public:
     Vector3& operator /=(const double& Scalar);
 
     inline double& operator[](int idx) { return v_[idx]; }
-    inline double operator[](int idx) const { return v_[idx]; }
+    inline const double& operator[](int idx) const { return v_[idx]; }
 
     friend std::ostream& operator<<(std::ostream& stream, const Vector3& vector);
 
