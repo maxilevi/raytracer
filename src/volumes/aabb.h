@@ -5,7 +5,7 @@
 #ifndef RAYTRACER_AABB_H
 #define RAYTRACER_AABB_H
 
-#include "../vector3.h"
+#include "../math/vector3.h"
 #include "../ray.h"
 
 class AABB {

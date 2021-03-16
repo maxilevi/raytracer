@@ -7,7 +7,7 @@
 
 
 #include <random>
-#include "vector3.h"
+#include "math/vector3.h"
 #include "scene.h"
 
 class Camera {

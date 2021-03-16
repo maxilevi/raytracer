@@ -6,7 +6,7 @@
 #define RAYTRACER_DRAWABLE_OBJECT_H
 
 
-#include "../vector3.h"
+#include "../math/vector3.h"
 #include "../ray.h"
 #include "aabb.h"
 
@@ -21,6 +21,11 @@ class Volume {
 public:
     virtual bool Hit(const Ray& ray, double t_min, double t_max, HitResult& record) const = 0;
     virtual bool BoundingBox(AABB& bounding_box) const = 0;
+
+    virtual void print(int spacing = 0) const
+    {
+        std::cout << "normal" << std::endl;
+    }
 };
 
 

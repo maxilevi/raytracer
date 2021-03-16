@@ -1,7 +1,7 @@
 #include "defines.h"
 #include <iostream>
 #include <fstream>
-#include "vector3.h"
+#include "math/vector3.h"
 #include "camera.h"
 #include "io/tga.h"
 #include "io/ply.h"
@@ -42,16 +42,29 @@ auto TimeIt(std::chrono::time_point<std::chrono::steady_clock>& prev_time)
 
 int LoadScene(Scene& scene, std::chrono::time_point<std::chrono::steady_clock> t1)
 {
-    Sphere floor(Vector3(0, -100.5, -1), 100);
-    scene.Add(std::shared_ptr<Volume>(new Sphere(Vector3(0, -100.5, -1), 100)));
+    std::vector<std::shared_ptr<Volume>> volumes;
+    //volumes.push_back(std::shared_ptr<Volume>(new Sphere(Vector3(0, -100.5, -1), 100)));
 
-    std::shared_ptr<TriangleList> model = LoadPLY("./../models/icosphere.ply");
-    model->Scale(Vector3(0.5));
-    model->Translate(Vector3(0, 0, -1));
-    scene.Add(model);
+    std::shared_ptr<TriangleList> model = LoadPLY("./../models/aurelius-low.ply");
+    if(model == nullptr) return 1;
+
+    //model->Scale(Vector3(0.5));
+    model->Transform(Matrix3::FromEuler(0, 180, 0));
+    model->Translate(Vector3(0, 0, -0.5));
+    //volumes.push_back(model);
+    for(size_t i = 0; i < model->Size(); ++i)
+    {
+        volumes.push_back(std::make_shared<Triangle>(model->triangles_[i]));
+    }
 
     std::cout << "Loaded " << model->Size() << " triangles" << std::endl;
     std::cout << "Loading the model took " << TimeIt(t1) << " ms" << std::endl;
+
+    auto bvh = std::make_shared<Bvh>(volumes, 0, volumes.size());
+    //bvh->print();
+    //scene.Add(bvh);
+    scene.Add(model);
+    std::cout << "Building the bvh took " << TimeIt(t1) << " ms" << std::endl;
 
     return 0;
 }
@@ -67,7 +80,7 @@ int main()
         return r;
 
     /* Camera */
-    Camera camera(1920 / 8, 1080 / 8);
+    Camera camera(1920 / 4, 1080 / 4);
 
     camera.Draw(scene);
 

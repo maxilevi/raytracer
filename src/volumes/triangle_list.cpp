@@ -57,3 +57,11 @@ void TriangleList::Scale(Vector3 scale)
         triangles_[i].Scale(scale);
     }
 }
+
+void TriangleList::Transform(Matrix3 transformation)
+{
+    for (uint32_t i = 0; i < count_; ++i)
+    {
+        triangles_[i].Transform(transformation);
+    }
+}

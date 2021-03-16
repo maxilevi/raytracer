@@ -6,9 +6,10 @@
 #define RAYTRACER_TRIANGLE_H
 
 
-#include "../vector3.h"
+#include "../math/vector3.h"
 #include "../ray.h"
 #include "volume.h"
+#include "../math/matrix3.h"
 
 class Triangle : public Volume {
 public:
@@ -40,6 +41,7 @@ public:
     bool BoundingBox(AABB& bounding_box) const override;
     void Translate(Vector3 offset);
     void Scale(Vector3 scale);
+    void Transform(Matrix3 transformation);
 
     friend std::ostream& operator<<(std::ostream& stream, const Triangle& triangle);
 

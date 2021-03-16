@@ -1,5 +1,5 @@
 #include "tracer_gpu.cuh"
-#include "vector3.h"
+#include "math/vector3.h"
 
 __global__
 void DoProcess(float* out_colors)

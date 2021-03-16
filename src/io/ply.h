@@ -112,7 +112,7 @@ std::unique_ptr<TriangleList> LoadPLY(const std::string& path)
 
     if (!infile.good()) {
         std::cout << "Failed to load file " << path << std::endl;
-        return 0;
+        return nullptr;
     }
 
     while (std::getline(infile, line))
@@ -120,7 +120,7 @@ std::unique_ptr<TriangleList> LoadPLY(const std::string& path)
         if(is_header)
         {
             if (!ProcessHeader(line, is_header, vertex_count, triangle_count, has_vertices, has_normals, has_uvs))
-                return 0;
+                return nullptr;
 
             if (!is_header)
                 triangles = std::unique_ptr<Triangle[]>(new Triangle[triangle_count]);
@@ -128,7 +128,7 @@ std::unique_ptr<TriangleList> LoadPLY(const std::string& path)
         } else {
             const int tokens_per_line = (has_vertices && has_normals && has_uvs ? 8 : has_vertices && has_normals ? 6 : 3);
             if (!ProcessBody(line, vertices, normals, triangles, triangle_index, token_buffer, tokens_per_line, has_vertices, has_normals, has_uvs, is_reading_verts, vertex_count))
-                return 0;
+                return nullptr;
         }
     }
     return std::make_unique<TriangleList>(std::move(triangles), triangle_count);

@@ -16,8 +16,8 @@ bool Scene::Hit(const Ray &ray, double t_min, double t_max, HitResult &record) c
     bool any_hit = false;
     double closest_so_far = t_max;
     auto* volumes = &this->volumes_.front();
-    const uint32_t size = this->volumes_.size();
-    for (int i = 0; i < size; ++i)
+    const size_t size = this->volumes_.size();
+    for (size_t i = 0; i < size; ++i)
     {
         if(volumes[i]->Hit(ray, t_min, closest_so_far, temp))
         {

@@ -85,3 +85,8 @@ bool Triangle::BoundingBox(AABB &bounding_box) const
     bounding_box = AABB(min, max);
     return true;
 }
+
+void Triangle::Transform(Matrix3 transformation)
+{
+    throw
+}

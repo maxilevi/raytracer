@@ -6,7 +6,7 @@
 #define RAYTRACER_MATRIX4_H
 
 
-class matrix4 {
+class Matrix4 {
 
 };
 
