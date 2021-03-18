@@ -51,7 +51,7 @@ Matrix3 operator*(const Matrix3 &mat1, const Matrix3 &mat2)
                 Vector3::Dot(mat1.rows_[2], mat2.Col0())
                 ),
         Vector3(
-                Vector3::Dot(mat1.rows_[0], mat2.Col0()),
+                Vector3::Dot(mat1.rows_[0], mat2.Col1()),
                 Vector3::Dot(mat1.rows_[1], mat2.Col1()),
                 Vector3::Dot(mat1.rows_[2], mat2.Col1())
                 ),
