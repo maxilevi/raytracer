@@ -88,5 +88,9 @@ bool Triangle::BoundingBox(AABB &bounding_box) const
 
 void Triangle::Transform(Matrix3 transformation)
 {
-    throw
+    for(auto & v : v_)
+        v = transformation * v;
+
+    for(auto & v : n_)
+        v = transformation * v;
 }
