@@ -17,12 +17,19 @@ public:
         rows_[2] = row2;
     };
 
-    static Matrix3 FromEuler(Vector3 angles);
-    static Matrix3 FromRotationX(double angle);
-    static Matrix3 FromRotationY(double angle);
-    static Matrix3 FromRotationZ(double angle);
+    [[nodiscard]] inline Vector3 Col(int i) const { return Vector3(rows_[0][i], rows_[1][i], rows_[2][i]); }
+    [[nodiscard]] inline Vector3 Col0() const { return Col(0); }
+    [[nodiscard]] inline Vector3 Col1() const { return Col(1); }
+    [[nodiscard]] inline Vector3 Col2() const { return Col(2); }
+
+    [[nodiscard]] static Matrix3 FromEuler(Vector3 angles);
+    [[nodiscard]] static Matrix3 FromRotationX(double angle);
+    [[nodiscard]] static Matrix3 FromRotationY(double angle);
+    [[nodiscard]] static Matrix3 FromRotationZ(double angle);
 
     friend Matrix3 operator *(const Matrix3& mat1, const Matrix3& mat2);
+    friend Vector3 operator *(const Matrix3& mat1, const Vector3& vec);
+    inline Vector3& operator[](int idx) { return rows_[idx]; }
 
 private:
     Vector3 rows_[3];

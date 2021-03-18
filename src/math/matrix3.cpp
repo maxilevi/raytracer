@@ -9,7 +9,7 @@
 
 Matrix3 Matrix3::FromEuler(Vector3 angles)
 {
-    return FromRotationX(angles.X()) * FromRotationY(angles.Y()) * FromRotationZ(angles.Z())
+    return FromRotationX(angles.X()) * FromRotationY(angles.Y()) * FromRotationZ(angles.Z());
 }
 
 Matrix3 Matrix3::FromRotationX(double angle)
@@ -46,19 +46,28 @@ Matrix3 operator*(const Matrix3 &mat1, const Matrix3 &mat2)
 {
     return Matrix3(
         Vector3(
-                Vector3::Dot(mat1.rows_[0], mat2.cols_[0]),
-                Vector3::Dot(mat1.rows_[1], mat2.cols_[0]),
-                Vector3::Dot(mat1.rows_[2], mat2.cols_[0])
+                Vector3::Dot(mat1.rows_[0], mat2.Col0()),
+                Vector3::Dot(mat1.rows_[1], mat2.Col0()),
+                Vector3::Dot(mat1.rows_[2], mat2.Col0())
                 ),
         Vector3(
-                Vector3::Dot(mat1.rows_[0], mat2.cols_[1]),
-                Vector3::Dot(mat1.rows_[1], mat2.cols_[1]),
-                Vector3::Dot(mat1.rows_[2], mat2.cols_[1])
+                Vector3::Dot(mat1.rows_[0], mat2.Col0()),
+                Vector3::Dot(mat1.rows_[1], mat2.Col1()),
+                Vector3::Dot(mat1.rows_[2], mat2.Col1())
                 ),
         Vector3(
-                Vector3::Dot(mat1.rows_[0], mat2.cols_[2]),
-                Vector3::Dot(mat1.rows_[1], mat2.cols_[2]),
-                Vector3::Dot(mat1.rows_[2], mat2.cols_[2])
+                Vector3::Dot(mat1.rows_[0], mat2.Col2()),
+                Vector3::Dot(mat1.rows_[1], mat2.Col2()),
+                Vector3::Dot(mat1.rows_[2], mat2.Col2())
                 )
         );
+}
+
+Vector3 operator*(const Matrix3 &mat1, const Vector3 &vec)
+{
+    return Vector3(
+        Vector3::Dot(mat1.rows_[0], vec),
+        Vector3::Dot(mat1.rows_[1], vec),
+        Vector3::Dot(mat1.rows_[2], vec)
+    );
 }
