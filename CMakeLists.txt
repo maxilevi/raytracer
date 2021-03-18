@@ -6,11 +6,15 @@ project(raytracer LANGUAGES CXX)
 #find_package(CUDA)
 #set(CMAKE_CUDA_STANDARD 14)
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_BUILD_TYPE Release)
 
-file(GLOB FILES src/volumes/*.h src/volumes/*.cpp src/*.cpp src/*.h src/io/*.cpp src/io/*.h)
+file(GLOB FILES src/volumes/*.h src/volumes/*.cpp src/*.cpp src/*.h src/io/*.cpp src/io/*.h src/math/*.h src/math/*.cpp)
 #file(GLOB CUDA_FILES src/*.cu src/*.cuh)
 
-add_executable(raytracer ${FILES} )
+if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    set(CMAKE_CXX_FLAGS_RELEASE "/O2")
+endif()
+add_executable(raytracer ${FILES})
 #add_executable(raytracer ${FILES} ${CUDA_FILES})
 
 #set_target_properties(
