@@ -46,7 +46,7 @@ public:
     friend std::ostream& operator<<(std::ostream& stream, const Triangle& triangle);
 
 private:
-    bool Intersects(const Ray& ray, double& t) const;
+    bool Intersects(const Ray &ray, double &t, double& u, double &v) const;
     Vector3 v_[3];
     Vector3 n_[3];
 };

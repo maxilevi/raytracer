@@ -71,3 +71,14 @@ Vector3 operator*(const Matrix3 &mat1, const Vector3 &vec)
         Vector3::Dot(mat1.rows_[2], vec)
     );
 }
+
+void Matrix3::Transpose()
+{
+    for(int i = 0; i < 3; ++i)
+    {
+        for(int j = i+1; j < 3; ++j)
+        {
+            rows_[i][j] = rows_[j][i];
+        }
+    }
+}

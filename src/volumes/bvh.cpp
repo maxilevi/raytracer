@@ -10,8 +10,10 @@ bool Bvh::Hit(const Ray &ray, double t_min, double t_max, HitResult &record) con
 {
     //std::cout << "Called hit on Bvh which has " << end_ - start_ << " objects inside" << std::endl;
 
-    if (!this->box_.Hit(ray, t_min, t_max))
+    if (!this->box_.Hit(ray, t_min, t_max)) {
+
         return false;
+    }
 
     bool hit_left = this->left_->Hit(ray, t_min, t_max, record);
     bool hit_right = this->right_->Hit(ray, t_min, hit_left ? record.t : t_max, record);

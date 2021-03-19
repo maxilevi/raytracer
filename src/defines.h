@@ -6,6 +6,12 @@
 #define RAYTRACER_DEFINES_H
 
 /* If we should use CUDA. If false the program uses C++17 std::execution::par_seq */
-#define USE_CUDA 0
+#define USE_CUDA 1
+
+#ifdef USE_CUDA
+#define CUDA_CALLABLE_MEMBER __host__ __device__
+#else
+#define CUDA_CALLABLE_MEMBER
+#endif
 
 #endif //RAYTRACER_DEFINES_H

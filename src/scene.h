@@ -8,6 +8,7 @@
 
 #include "volumes/volume.h"
 #include <vector>
+#include <memory>
 
 class Scene : public Volume {
 public:

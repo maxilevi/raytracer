@@ -1,3 +1,4 @@
+#include "trace.h"
 #include "defines.h"
 #include <iostream>
 #include <fstream>
@@ -12,6 +13,8 @@
 #include <chrono>
 #include <string>
 #include <cstdint>
+
+int INTERSECT_CALLS = 0;
 
 void WriteOutput(const std::string& path, const Camera& camera)
 {
@@ -45,11 +48,11 @@ int LoadScene(Scene& scene, std::chrono::time_point<std::chrono::steady_clock> t
     std::vector<std::shared_ptr<Volume>> volumes;
     //volumes.push_back(std::shared_ptr<Volume>(new Sphere(Vector3(0, -100.5, -1), 100)));
 
-    std::shared_ptr<TriangleList> model = LoadPLY("./../models/aurelius-low.ply");
+    std::shared_ptr<TriangleList> model = LoadPLY("./../models/icosphere.ply");
     if(model == nullptr) return 1;
 
-    //model->Scale(Vector3(0.5));
-    model->Transform(Matrix3::FromEuler(0, 180, 0));
+    model->Scale(Vector3(0.25));
+    model->Transform(Matrix3::FromEuler({0, 180, 0}));
     model->Translate(Vector3(0, 0, -0.5));
     //volumes.push_back(model);
     for(size_t i = 0; i < model->Size(); ++i)
@@ -62,8 +65,8 @@ int LoadScene(Scene& scene, std::chrono::time_point<std::chrono::steady_clock> t
 
     auto bvh = std::make_shared<Bvh>(volumes, 0, volumes.size());
     //bvh->print();
-    //scene.Add(bvh);
-    scene.Add(model);
+    scene.Add(bvh);
+    //scene.Add(model); 29565
     std::cout << "Building the bvh took " << TimeIt(t1) << " ms" << std::endl;
 
     return 0;
@@ -80,11 +83,13 @@ int main()
         return r;
 
     /* Camera */
-    Camera camera(1920 / 4, 1080 / 4);
+    Camera camera(1920 / 2, 1080 / 2);
 
     camera.Draw(scene);
 
-    std::cout << "Drawing took " << TimeIt(t1) << " ms";
+    std::cout << "Drawing took " << TimeIt(t1) << " ms" << std::endl;
+
+    std::cout << "Triangle intersect calls were " << INTERSECT_CALLS << std::endl;
 
     WriteOutput("./output.tga", camera);
 

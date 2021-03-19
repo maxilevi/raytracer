@@ -2,8 +2,8 @@
  * Created by Maximiliano Levi on 16/02/2021.
  */
 
-#ifndef RAYTRACER_VECTOR3_CUH
-#define RAYTRACER_VECTOR3_CUH
+#ifndef RAYTRACER_VECTOR3_H
+#define RAYTRACER_VECTOR3_H
 
 #include <cmath>
 #include <iostream>
@@ -89,4 +89,4 @@ private:
     double v_[3]{};
 };
 
-#endif //RAYTRACER_VECTOR3_CUH
+#endif //RAYTRACER_VECTOR3_H

@@ -17,6 +17,8 @@ public:
         rows_[2] = row2;
     };
 
+    void Transpose();
+
     [[nodiscard]] inline Vector3 Col(int i) const { return Vector3(rows_[0][i], rows_[1][i], rows_[2][i]); }
     [[nodiscard]] inline Vector3 Col0() const { return Col(0); }
     [[nodiscard]] inline Vector3 Col1() const { return Col(1); }
@@ -26,6 +28,13 @@ public:
     [[nodiscard]] static Matrix3 FromRotationX(double angle);
     [[nodiscard]] static Matrix3 FromRotationY(double angle);
     [[nodiscard]] static Matrix3 FromRotationZ(double angle);
+
+    [[nodiscard]] inline Matrix3 Transposed() const
+    {
+        auto mat = Matrix3(*this);
+        mat.Transpose();
+        return mat;
+    }
 
     friend Matrix3 operator *(const Matrix3& mat1, const Matrix3& mat2);
     friend Vector3 operator *(const Matrix3& mat1, const Vector3& vec);
