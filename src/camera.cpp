@@ -4,11 +4,11 @@
 #include "defines.h"
 #include "camera.h"
 #include "ray.h"
+#include <execution>
 #include <limits>
+#include <thread>
 #if USE_CUDA
 #include "tracer_gpu.cuh"
-#else
-#include <execution>
 #endif
 
 
@@ -30,21 +30,21 @@ Vector3 BackgroundColor(const Ray& ray)
     return (1.0 - t) * Vector3::One + t * Vector3(0.5, 0.7, 1.0);
 }
 
-Vector3 Camera::Color(const Scene& scene, const Ray& ray, std::uniform_real_distribution<double> dist, std::mt19937 gen, int iteration)
+Vector3 Camera::Color(const Scene& scene, const Ray& ray, std::uniform_real_distribution<double> dist, std::mt19937 gen) const
 {
-    if (iteration == Camera::kMaxLightBounces)
-        return {0, 0, 0};
-
+    Ray current_ray = ray;
     HitResult result;
-    if (scene.Hit(ray, 0.01, std::numeric_limits<double>::max(), result))
+    Vector3 color = Vector3::One;
+    int iteration = 0;
+    while (scene.Hit(current_ray, 0.001, std::numeric_limits<double>::max(), result))
     {
-        Vector3 target = result.Point + result.Normal + RandomPointOnUnitSphere(dist, gen);
-        return 0.5 * Color(scene, Ray(result.Point, target - result.Point), dist, gen, iteration + 1);
+        Vector3 target_direction = result.Normal + RandomPointOnUnitSphere(dist, gen);
+        current_ray = Ray(result.Point, target_direction);
+        color *= 0.5;
+        if (iteration++ == Camera::kMaxLightBounces)
+            return {0, 0, 0};
     }
-    else
-    {
-        return BackgroundColor(ray);
-    }
+    return color * BackgroundColor(current_ray);
 }
 
 void Camera::NormalizeFrame()
@@ -66,7 +66,7 @@ void Camera::NormalizeFrame()
     }
 }
 
-void Camera::ProcessRays(Scene& scene, std::vector<std::pair<int, int>> params)
+void Camera::ProcessRays(Scene& scene, const std::vector<std::pair<int, int>>& params)
 {
     double screen_ratio = (double(width_) / double(height_));
     Vector3 origin(0, 0, 0);
@@ -77,7 +77,7 @@ void Camera::ProcessRays(Scene& scene, std::vector<std::pair<int, int>> params)
     std::mt19937 gen(rd());
     std::uniform_real_distribution<double> dist(0.0, 1.0);
 
-    std::for_each(std::execution::par_unseq, params.begin(), params.end(), [&](std::pair<int, int> pair)
+    auto element_func = [&](std::pair<int, int> pair)
     {
         auto [i, j] = pair;
         double noise = dist(gen);
@@ -86,16 +86,17 @@ void Camera::ProcessRays(Scene& scene, std::vector<std::pair<int, int>> params)
 
         Ray r(origin, screen + step_x * u + step_y * v);
         this->colors_[j * width_ + i] += Color(scene, r, dist, gen);
-    });
+    };
+
+    std::for_each(std::execution::par_unseq, params.begin(), params.end(), element_func);
 }
 
 void Camera::Draw(Scene& scene)
 {
     std::vector<std::pair<int, int>> params;
-
     for (int32_t j = height_-1; j > -1; --j)
     {
-        for (int32_t i = 0; i < width_; ++i)
+        for (int32_t i = 0; i < (int32_t)width_; ++i)
         {
             for(int s = 0; s < Camera::kAntialiasingSamples; ++s)
             {
