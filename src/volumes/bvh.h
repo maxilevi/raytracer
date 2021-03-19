@@ -14,8 +14,8 @@ public:
     Bvh() = default;
     Bvh(std::vector<std::shared_ptr<Volume>>& volumes, size_t start, size_t end);
 
-    bool Hit(const Ray& ray, double t_min, double t_max, HitResult& record) const override;
-    bool BoundingBox(AABB& bounding_box) const override;
+    CUDA_CALLABLE_MEMBER bool Hit(const Ray& ray, double t_min, double t_max, HitResult& record) const override;
+    CUDA_CALLABLE_MEMBER bool BoundingBox(AABB& bounding_box) const override;
 
 private:
     AABB box_;

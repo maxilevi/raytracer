@@ -6,7 +6,7 @@
 #include "bvh.h"
 #include <random>
 
-bool Bvh::Hit(const Ray &ray, double t_min, double t_max, HitResult &record) const
+CUDA_CALLABLE_MEMBER bool Bvh::Hit(const Ray &ray, double t_min, double t_max, HitResult &record) const
 {
     //std::cout << "Called hit on Bvh which has " << end_ - start_ << " objects inside" << std::endl;
 
@@ -21,7 +21,7 @@ bool Bvh::Hit(const Ray &ray, double t_min, double t_max, HitResult &record) con
     return hit_left || hit_right;
 }
 
-bool Bvh::BoundingBox(AABB &bounding_box) const
+CUDA_CALLABLE_MEMBER bool Bvh::BoundingBox(AABB &bounding_box) const
 {
     bounding_box = this->box_;
     return true;

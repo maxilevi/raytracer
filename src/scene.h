@@ -13,8 +13,8 @@
 class Scene : public Volume {
 public:
     bool Add(std::shared_ptr<Volume>);
-    bool Hit(const Ray& ray, double t_min, double t_max, HitResult& record) const override;
-    bool BoundingBox(AABB& output_box) const override;
+    CUDA_CALLABLE_MEMBER bool Hit(const Ray& ray, double t_min, double t_max, HitResult& record) const override;
+    CUDA_CALLABLE_MEMBER bool BoundingBox(AABB& output_box) const override;
 
 private:
     std::vector<std::shared_ptr<Volume>> volumes_;

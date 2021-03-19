@@ -1,20 +1,13 @@
-#include "trace.h"
 #include "defines.h"
 #include <iostream>
-#include <fstream>
 #include "math/vector3.h"
 #include "camera.h"
 #include "io/tga.h"
 #include "io/ply.h"
 #include "volumes/bvh.h"
-#include "scene.h"
-#include "volumes/sphere.h"
-#include "volumes/triangle_list.h"
 #include <chrono>
 #include <string>
 #include <cstdint>
-
-int INTERSECT_CALLS = 0;
 
 void WriteOutput(const std::string& path, const Camera& camera)
 {
@@ -89,7 +82,7 @@ int main()
 
     std::cout << "Drawing took " << TimeIt(t1) << " ms" << std::endl;
 
-    std::cout << "Triangle intersect calls were " << INTERSECT_CALLS << std::endl;
+   //std::cout << "Triangle intersect calls were " << INTERSECT_CALLS << std::endl;
 
     WriteOutput("./output.tga", camera);
 

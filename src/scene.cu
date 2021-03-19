@@ -10,7 +10,7 @@ bool Scene::Add(std::shared_ptr<Volume> volume)
     return false;
 }
 
-bool Scene::Hit(const Ray &ray, double t_min, double t_max, HitResult &record) const
+CUDA_CALLABLE_MEMBER bool Scene::Hit(const Ray &ray, double t_min, double t_max, HitResult &record) const
 {
     HitResult temp;
     bool any_hit = false;
@@ -29,7 +29,7 @@ bool Scene::Hit(const Ray &ray, double t_min, double t_max, HitResult &record) c
     return any_hit;
 }
 
-bool Scene::BoundingBox(AABB &output_box) const
+CUDA_CALLABLE_MEMBER bool Scene::BoundingBox(AABB &output_box) const
 {
     if (volumes_.empty()) return false;
 

@@ -7,7 +7,7 @@
 
 
 #include "../math/vector3.h"
-#include "../ray.h"
+#include "../math/ray.h"
 #include "volume.h"
 #include "../math/matrix3.h"
 
@@ -37,8 +37,8 @@ public:
         n_[2] = n2;
     };
 
-    bool Hit(const Ray& ray, double t_min, double t_max, HitResult& record) const override;
-    bool BoundingBox(AABB& bounding_box) const override;
+    CUDA_CALLABLE_MEMBER bool Hit(const Ray& ray, double t_min, double t_max, HitResult& record) const override;
+    CUDA_CALLABLE_MEMBER bool BoundingBox(AABB& bounding_box) const override;
     void Translate(Vector3 offset);
     void Scale(Vector3 scale);
     void Transform(Matrix3 transformation);
@@ -46,7 +46,7 @@ public:
     friend std::ostream& operator<<(std::ostream& stream, const Triangle& triangle);
 
 private:
-    bool Intersects(const Ray &ray, double &t, double& u, double &v) const;
+    CUDA_CALLABLE_MEMBER bool Intersects(const Ray &ray, double &t, double& u, double &v) const;
     Vector3 v_[3];
     Vector3 n_[3];
 };

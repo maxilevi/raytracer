@@ -6,17 +6,17 @@
 #define RAYTRACER_AABB_H
 
 #include "../math/vector3.h"
-#include "../ray.h"
+#include "../math/ray.h"
 
 class AABB {
 public:
     AABB() = default;
-    AABB(const Vector3& min, const Vector3& max) : min_(min), max_(max) {};
+    CUDA_CALLABLE_MEMBER AABB(const Vector3& min, const Vector3& max) : min_(min), max_(max) {};
 
     [[nodiscard]] inline const Vector3& Min() const { return min_; }
     [[nodiscard]] inline const Vector3& Max() const { return max_; }
 
-    [[nodiscard]] inline bool Hit(const Ray& ray, double t_min, double t_max) const
+    CUDA_CALLABLE_MEMBER inline bool Hit(const Ray& ray, double t_min, double t_max) const
     {
         for(int i = 0; i < 3; ++i)
         {
@@ -36,7 +36,7 @@ public:
         return true;
     }
 
-    static AABB Merge(const AABB& a, const AABB& b);
+    CUDA_CALLABLE_MEMBER static AABB Merge(const AABB& a, const AABB& b);
 
 private:
     Vector3 min_;

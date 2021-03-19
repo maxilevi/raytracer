@@ -5,7 +5,7 @@
 #include "aabb.h"
 #include <algorithm>
 
-AABB AABB::Merge(const AABB &a, const AABB &b)
+CUDA_CALLABLE_MEMBER AABB AABB::Merge(const AABB &a, const AABB &b)
 {
     Vector3 min, max;
 
@@ -15,5 +15,5 @@ AABB AABB::Merge(const AABB &a, const AABB &b)
         max[i] = std::max(a.max_[i], b.max_[i]);
     }
 
-    return AABB(min, max);
+    return {min, max};
 }

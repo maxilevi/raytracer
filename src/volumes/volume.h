@@ -7,11 +7,12 @@
 
 
 #include "../math/vector3.h"
-#include "../ray.h"
+#include "../math/ray.h"
 #include "aabb.h"
 
 struct HitResult
 {
+    CUDA_CALLABLE_MEMBER HitResult() {};
     double t = 0;
     Vector3 Point;
     Vector3 Normal;
@@ -19,13 +20,8 @@ struct HitResult
 
 class Volume {
 public:
-    virtual bool Hit(const Ray& ray, double t_min, double t_max, HitResult& record) const = 0;
-    virtual bool BoundingBox(AABB& bounding_box) const = 0;
-
-    virtual void print(int spacing = 0) const
-    {
-        std::cout << "normal" << std::endl;
-    }
+    CUDA_CALLABLE_MEMBER virtual bool Hit(const Ray& ray, double t_min, double t_max, HitResult& record) const = 0;
+    CUDA_CALLABLE_MEMBER virtual bool BoundingBox(AABB& bounding_box) const = 0;
 };
 
 

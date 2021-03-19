@@ -5,16 +5,14 @@
 #include "triangle.h"
 #include <limits>
 #include <algorithm>
-#include "../trace.h"
 
 /*
  * Möller–Trumbore intersection algorithm
  *
  * https://en.wikipedia.org/wiki/M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm
  * */
-bool Triangle::Intersects(const Ray &ray, double &t, double& u, double &v) const
+CUDA_CALLABLE_MEMBER bool Triangle::Intersects(const Ray &ray, double &t, double& u, double &v) const
 {
-    CALLED_TRIANGLE_INTERSECT();
     constexpr double epsilon = std::numeric_limits<double>::epsilon();
     auto edge1 = v_[1] - v_[0];
     auto edge2 = v_[2] - v_[0];
@@ -42,14 +40,13 @@ bool Triangle::Intersects(const Ray &ray, double &t, double& u, double &v) const
     return false;
 }
 
-bool Triangle::Hit(const Ray &ray, double t_min, double t_max, HitResult &record) const
+CUDA_CALLABLE_MEMBER bool Triangle::Hit(const Ray &ray, double t_min, double t_max, HitResult &record) const
 {
     double t, u, v;
     if (!Intersects(ray, t, u, v)) return false;
     if (t >= t_max || t <= t_min) return false;
     record.t = t;
     record.Point = ray.Point(record.t);
-    // TODO: Interpolate normals with barycentric coordinates
     record.Normal = u * n_[0] + v * n_[1] + (1 - u - v) * n_[2];
     return true;
 }
@@ -73,7 +70,7 @@ void Triangle::Scale(Vector3 scale)
         i *= scale;
 }
 
-bool Triangle::BoundingBox(AABB &bounding_box) const
+CUDA_CALLABLE_MEMBER bool Triangle::BoundingBox(AABB &bounding_box) const
 {
     Vector3 min(std::numeric_limits<double>::max()), max(std::numeric_limits<double>::min());
     for(auto& v : v_)

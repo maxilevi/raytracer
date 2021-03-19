@@ -4,7 +4,7 @@
 
 #include "sphere.h"
 
-bool Sphere::IsValidHit(const Ray &ray, double t, double t_min, double t_max, HitResult& record) const
+CUDA_CALLABLE_MEMBER bool Sphere::IsValidHit(const Ray &ray, double t, double t_min, double t_max, HitResult& record) const
 {
     if (t >= t_max || t <= t_min) return false;
     record.t = t;
@@ -13,7 +13,7 @@ bool Sphere::IsValidHit(const Ray &ray, double t, double t_min, double t_max, Hi
     return true;
 }
 
-bool Sphere::Hit(const Ray &ray, double t_min, double t_max, HitResult &record) const
+CUDA_CALLABLE_MEMBER bool Sphere::Hit(const Ray &ray, double t_min, double t_max, HitResult &record) const
 {
     /*
      * dot(p(t)-c, p(t)-c) = r^2 -> Equation for finding the points the ray collides
@@ -40,7 +40,7 @@ bool Sphere::Hit(const Ray &ray, double t_min, double t_max, HitResult &record) 
     return false;
 }
 
-bool Sphere::BoundingBox(AABB &bounding_box) const
+CUDA_CALLABLE_MEMBER bool Sphere::BoundingBox(AABB &bounding_box) const
 {
     bounding_box = AABB(center_ - Vector3(radius_), center_ + Vector3(radius_));
     return true;

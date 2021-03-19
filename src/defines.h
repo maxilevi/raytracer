@@ -10,6 +10,7 @@
 
 #ifdef USE_CUDA
 #define CUDA_CALLABLE_MEMBER __host__ __device__
+#define CUDA_DEVICE __constant__
 #else
 #define CUDA_CALLABLE_MEMBER
 #endif
