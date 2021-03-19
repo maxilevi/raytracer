@@ -2,11 +2,12 @@
  * Created by Maximiliano Levi on 16/02/2021.
  */
 
-#ifndef RAYTRACER_VECTOR3_H
-#define RAYTRACER_VECTOR3_H
+#ifndef RAYTRACER_VECTOR3_CUH
+#define RAYTRACER_VECTOR3_CUH
 
 #include <cmath>
 #include <iostream>
+#include "../defines.h"
 
 class Vector3 {
 public:
@@ -22,12 +23,12 @@ public:
 
     Vector3 Normalized();
     void Normalize();
-    [[nodiscard]] inline double LengthSquared() const { return (v_[0] * v_[0] + v_[1] * v_[1] + v_[2] * v_[2]); }
-    [[nodiscard]] inline double Length() const { return std::sqrt(LengthSquared()); }
+    inline double LengthSquared() const { return (v_[0] * v_[0] + v_[1] * v_[1] + v_[2] * v_[2]); }
+    inline double Length() const { return std::sqrt(LengthSquared()); }
 
-    [[nodiscard]] inline double X() const { return v_[0]; }
-    [[nodiscard]] inline double Y() const { return v_[1]; }
-    [[nodiscard]] inline double Z() const { return v_[2]; }
+    inline double X() const { return v_[0]; }
+    inline double Y() const { return v_[1]; }
+    inline double Z() const { return v_[2]; }
 
     inline Vector3& operator +() { return *this; }
     inline Vector3 operator -() { return {-v_[0], -v_[1], -v_[2]}; }
@@ -47,6 +48,11 @@ public:
     inline friend Vector3 operator +(const Vector3& v1, const Vector3& v2)
     {
         return {v1.v_[0] + v2.v_[0], v1.v_[1] + v2.v_[1], v1.v_[2] + v2.v_[2]};
+    }
+
+    inline friend Vector3 operator *(const Vector3& v1, const Vector3& v2)
+    {
+        return {v1.v_[0] * v2.v_[0], v1.v_[1] * v2.v_[1], v1.v_[2] * v2.v_[2]};
     }
 
     inline friend Vector3 operator -(const Vector3& v1, const Vector3& v2)
@@ -83,4 +89,4 @@ private:
     double v_[3]{};
 };
 
-#endif //RAYTRACER_VECTOR3_H
+#endif //RAYTRACER_VECTOR3_CUH
