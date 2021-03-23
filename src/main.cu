@@ -5,6 +5,8 @@
 #include "io/tga.h"
 #include "io/ply.h"
 #include "volumes/bvh.h"
+#include "kernel/kernel_ptr.h"
+#include "kernel/kernel_vector.h"
 #include <chrono>
 #include <string>
 #include <cstdint>
@@ -38,28 +40,37 @@ auto TimeIt(std::chrono::time_point<std::chrono::steady_clock>& prev_time)
 
 int LoadScene(Scene& scene, std::chrono::time_point<std::chrono::steady_clock> t1)
 {
-    std::vector<std::shared_ptr<Volume>> volumes;
-    //volumes.push_back(std::shared_ptr<Volume>(new Sphere(Vector3(0, -100.5, -1), 100)));
-
     std::shared_ptr<TriangleList> model = LoadPLY("./../models/icosphere.ply");
-    if(model == nullptr) return 1;
-
-    model->Scale(Vector3(0.25));
-    model->Transform(Matrix3::FromEuler({0, 180, 0}));
-    model->Translate(Vector3(0, 0, -0.5));
-    //volumes.push_back(model);
-    for(size_t i = 0; i < model->Size(); ++i)
-    {
-        volumes.push_back(std::make_shared<Triangle>(model->triangles_[i]));
-    }
 
     std::cout << "Loaded " << model->Size() << " triangles" << std::endl;
     std::cout << "Loading the model took " << TimeIt(t1) << " ms" << std::endl;
+    if(model == nullptr) return 1;
 
-    auto bvh = std::make_shared<Bvh>(volumes, 0, volumes.size());
-    //bvh->print();
-    scene.Add(bvh);
-    //scene.Add(model); 29565
+    std::vector<std::shared_ptr<Volume>> triangles;
+    model->Scale(Vector3(0.25));
+    model->Transform(Matrix3::FromEuler({0, 180, 0}));
+    model->Translate(Vector3(0, 0, -0.5));
+
+    std::cout << "Allocating " << model->Size() << " triangles on CUDA memory... " << std::endl;
+
+    size_t element_count = model->Size();
+    Volume** volumes_array;
+
+    CUDA_CALL(cudaMalloc(&volumes_array, element_count * sizeof(Volume*)));
+
+    for(size_t i = 0; i < model->Size(); ++i)
+    {
+        Triangle* ptr;
+        CUDA_CALL(cudaMalloc(&ptr, sizeof(Triangle)));
+        CUDA_CALL(cudaMemcpy(ptr, &model->triangles_[i], sizeof(Triangle), cudaMemcpyHostToDevice));
+        CUDA_CALL(cudaMemcpy(&volumes_array[i], ptr, sizeof(Triangle*), cudaMemcpyDeviceToDevice));
+    }
+
+    scene.Build(volumes_array, element_count);
+    std::cout << "CUDA memory allocated with success" << std::endl;
+
+    //Bvh bvh(triangles, 0, triangles.size());
+    //scene.push_back(bvh);
     std::cout << "Building the bvh took " << TimeIt(t1) << " ms" << std::endl;
 
     return 0;

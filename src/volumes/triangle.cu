@@ -11,7 +11,7 @@
  *
  * https://en.wikipedia.org/wiki/M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm
  * */
-CUDA_CALLABLE_MEMBER bool Triangle::Intersects(const Ray &ray, double &t, double& u, double &v) const
+CUDA_DEVICE bool Triangle::Intersects(const Ray &ray, double &t, double& u, double &v) const
 {
     constexpr double epsilon = std::numeric_limits<double>::epsilon();
     auto edge1 = v_[1] - v_[0];
@@ -40,7 +40,7 @@ CUDA_CALLABLE_MEMBER bool Triangle::Intersects(const Ray &ray, double &t, double
     return false;
 }
 
-CUDA_CALLABLE_MEMBER bool Triangle::Hit(const Ray &ray, double t_min, double t_max, HitResult &record) const
+CUDA_DEVICE bool Triangle::Hit(const Ray &ray, double t_min, double t_max, HitResult &record) const
 {
     double t, u, v;
     if (!Intersects(ray, t, u, v)) return false;
@@ -70,7 +70,7 @@ void Triangle::Scale(Vector3 scale)
         i *= scale;
 }
 
-CUDA_CALLABLE_MEMBER bool Triangle::BoundingBox(AABB &bounding_box) const
+CUDA_DEVICE bool Triangle::BoundingBox(AABB &bounding_box) const
 {
     Vector3 min(std::numeric_limits<double>::max()), max(std::numeric_limits<double>::min());
     for(auto& v : v_)

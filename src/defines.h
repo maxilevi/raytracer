@@ -9,10 +9,10 @@
 #define USE_CUDA 1
 
 #ifdef USE_CUDA
-#define CUDA_CALLABLE_MEMBER __host__ __device__
-#define CUDA_DEVICE __constant__
+#define CUDA_DEVICE __host__ __device__
+#define CUDA_CALL(x) {cudaError_t cuda_error__ = (x); if (cuda_error__) printf("CUDA error: " #x " returned \"%s\"\n", cudaGetErrorString(cuda_error__));}
 #else
-#define CUDA_CALLABLE_MEMBER
+#define CUDA_DEVICE
 #endif
 
 #endif //RAYTRACER_DEFINES_H

@@ -7,17 +7,20 @@
 
 
 #include "volumes/volume.h"
-#include <vector>
+#include "kernel/kernel_vector.h"
+#include "kernel/kernel_ptr.h"
 #include <memory>
 
-class Scene : public Volume {
+class Scene {
 public:
-    bool Add(std::shared_ptr<Volume>);
-    CUDA_CALLABLE_MEMBER bool Hit(const Ray& ray, double t_min, double t_max, HitResult& record) const override;
-    CUDA_CALLABLE_MEMBER bool BoundingBox(AABB& output_box) const override;
+    ~Scene();
+    void Build(Volume**, size_t);
+    CUDA_DEVICE bool Hit(const Ray& ray, double t_min, double t_max, HitResult& record) const;
+    CUDA_DEVICE bool BoundingBox(AABB& output_box) const;
 
 private:
-    std::vector<std::shared_ptr<Volume>> volumes_;
+    Volume** volumes_;
+    size_t count_;
 };
 
 

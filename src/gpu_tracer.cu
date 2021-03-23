@@ -7,17 +7,15 @@
 #include "math/ray.h"
 #include "camera.h"
 
-#define CUDA_CALL(x) {cudaError_t cuda_error__ = (x); if (cuda_error__) printf("CUDA error: " #x " returned \"%s\"\n", cudaGetErrorString(cuda_error__));}
-
 __constant__ const double PI = 3.14159265;
 __constant__ const double MAX_DOUBLE = DBL_MAX;
 
-CUDA_CALLABLE_MEMBER double RandomDouble()
+CUDA_DEVICE double RandomDouble()
 {
     return 0;
 }
 
-CUDA_CALLABLE_MEMBER Vector3 RandomPointOnUnitSphere()
+CUDA_DEVICE Vector3 RandomPointOnUnitSphere()
 {
     double u1 = RandomDouble();
     double u2 = RandomDouble();
@@ -26,14 +24,14 @@ CUDA_CALLABLE_MEMBER Vector3 RandomPointOnUnitSphere()
     return {std::cos(lambda) * std::cos(phi), std::cos(lambda) * std::sin(phi), std::sin(lambda)};
 }
 
-CUDA_CALLABLE_MEMBER Vector3 BackgroundColor(const Ray& ray)
+CUDA_DEVICE Vector3 BackgroundColor(const Ray& ray)
 {
     auto unit_dir = Vector3(ray.Direction()).Normalized();
     double t = 0.5 * (unit_dir.Y() + 1.0);
     return (1.0 - t) * Vector3(1) + t * Vector3(0.5, 0.7, 1.0);
 }
 
-CUDA_CALLABLE_MEMBER Vector3 Color(const Scene& scene, const Ray& ray)
+CUDA_DEVICE Vector3 Color(const Scene& scene, const Ray& ray)
 {
     Ray current_ray = ray;
     HitResult result;
@@ -51,7 +49,7 @@ CUDA_CALLABLE_MEMBER Vector3 Color(const Scene& scene, const Ray& ray)
 }
 
 __global__
-void CUDAColor(Vector3* out_colors, const int* device_params, int n, int width, int height)
+void CUDAColor(Scene scene, Vector3* out_colors, const int* device_params, int n, int width, int height)
 {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= n) return;
@@ -60,7 +58,7 @@ void CUDAColor(Vector3* out_colors, const int* device_params, int n, int width, 
     out_colors[j * width + i] += Vector3(1, 0, 0);
 }
 
-void GPUTrace(Scene& scene, const std::vector<std::pair<int, int>>& params, Vector3* colors, int width, int height)
+void GPUTrace(Scene scene, const std::vector<std::pair<int, int>>& params, Vector3* colors, int width, int height)
 {
     double screen_ratio = (double(width) / double(height));
     Vector3 origin(0, 0, 0);
@@ -85,7 +83,7 @@ void GPUTrace(Scene& scene, const std::vector<std::pair<int, int>>& params, Vect
 
     std::cout << "Launched." << std::endl;
 
-    CUDAColor<<<blocks, threads>>>(out_colors, device_params, n, width, height);
+    CUDAColor<<<blocks, threads>>>(scene, out_colors, device_params, n, width, height);
 
     cudaDeviceSynchronize();
 

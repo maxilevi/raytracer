@@ -14,8 +14,8 @@ class TriangleList : public Volume {
 public:
     TriangleList(std::unique_ptr<Triangle[]> triangles, uint32_t count);
 
-    CUDA_CALLABLE_MEMBER bool Hit(const Ray& ray, double t_min, double t_max, HitResult& record) const override;
-    CUDA_CALLABLE_MEMBER bool BoundingBox(AABB& bounding_box) const override;
+    CUDA_DEVICE bool Hit(const Ray& ray, double t_min, double t_max, HitResult& record) const override;
+    CUDA_DEVICE bool BoundingBox(AABB& bounding_box) const override;
     void Translate(Vector3 offset);
     void Scale(Vector3 scale);
     void Transform(Matrix3 transformation);

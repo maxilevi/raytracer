@@ -12,7 +12,7 @@
 
 struct HitResult
 {
-    CUDA_CALLABLE_MEMBER HitResult() {};
+    CUDA_DEVICE HitResult() {};
     double t = 0;
     Vector3 Point;
     Vector3 Normal;
@@ -20,8 +20,8 @@ struct HitResult
 
 class Volume {
 public:
-    CUDA_CALLABLE_MEMBER virtual bool Hit(const Ray& ray, double t_min, double t_max, HitResult& record) const = 0;
-    CUDA_CALLABLE_MEMBER virtual bool BoundingBox(AABB& bounding_box) const = 0;
+    CUDA_DEVICE virtual bool Hit(const Ray& ray, double t_min, double t_max, HitResult& record) const = 0;
+    CUDA_DEVICE virtual bool BoundingBox(AABB& bounding_box) const = 0;
 };
 
 

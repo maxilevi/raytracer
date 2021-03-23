@@ -11,12 +11,12 @@
 class AABB {
 public:
     AABB() = default;
-    CUDA_CALLABLE_MEMBER AABB(const Vector3& min, const Vector3& max) : min_(min), max_(max) {};
+    CUDA_DEVICE AABB(const Vector3& min, const Vector3& max) : min_(min), max_(max) {};
 
     [[nodiscard]] inline const Vector3& Min() const { return min_; }
     [[nodiscard]] inline const Vector3& Max() const { return max_; }
 
-    CUDA_CALLABLE_MEMBER inline bool Hit(const Ray& ray, double t_min, double t_max) const
+    CUDA_DEVICE inline bool Hit(const Ray& ray, double t_min, double t_max) const
     {
         for(int i = 0; i < 3; ++i)
         {
@@ -36,7 +36,7 @@ public:
         return true;
     }
 
-    CUDA_CALLABLE_MEMBER static AABB Merge(const AABB& a, const AABB& b);
+    CUDA_DEVICE static AABB Merge(const AABB& a, const AABB& b);
 
 private:
     Vector3 min_;

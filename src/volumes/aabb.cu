@@ -5,7 +5,7 @@
 #include "aabb.h"
 #include <algorithm>
 
-CUDA_CALLABLE_MEMBER AABB AABB::Merge(const AABB &a, const AABB &b)
+CUDA_DEVICE AABB AABB::Merge(const AABB &a, const AABB &b)
 {
     Vector3 min, max;
 

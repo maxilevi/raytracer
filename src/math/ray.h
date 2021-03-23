@@ -11,10 +11,10 @@
 class Ray {
 public:
     Ray() = default;
-    CUDA_CALLABLE_MEMBER  Ray(const Vector3& origin, const Vector3& direction) : origin_(origin), direction_(direction) {};
-    CUDA_CALLABLE_MEMBER  inline const Vector3& Origin() const { return this->origin_; }
-    CUDA_CALLABLE_MEMBER  inline const Vector3& Direction() const { return this->direction_; }
-    CUDA_CALLABLE_MEMBER  inline Vector3 Point(double t) const { return this->origin_ + this->direction_ * t; }
+    CUDA_DEVICE  Ray(const Vector3& origin, const Vector3& direction) : origin_(origin), direction_(direction) {};
+    CUDA_DEVICE  inline const Vector3& Origin() const { return this->origin_; }
+    CUDA_DEVICE  inline const Vector3& Direction() const { return this->direction_; }
+    CUDA_DEVICE  inline Vector3 Point(double t) const { return this->origin_ + this->direction_ * t; }
 
 private:
     Vector3 origin_;

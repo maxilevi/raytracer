@@ -4,22 +4,20 @@
 
 #include "scene.h"
 
-bool Scene::Add(std::shared_ptr<Volume> volume)
+void Scene::Build(Volume** volume, size_t count)
 {
-    this->volumes_.push_back(volume);
-    return false;
+    this->volumes_ = volume;
+    this->count_ = count;
 }
 
-CUDA_CALLABLE_MEMBER bool Scene::Hit(const Ray &ray, double t_min, double t_max, HitResult &record) const
+CUDA_DEVICE bool Scene::Hit(const Ray &ray, double t_min, double t_max, HitResult &record) const
 {
     HitResult temp;
     bool any_hit = false;
     double closest_so_far = t_max;
-    auto* volumes = &this->volumes_.front();
-    const size_t size = this->volumes_.size();
-    for (size_t i = 0; i < size; ++i)
+    for (size_t i = 0; i < count_; ++i)
     {
-        if(volumes[i]->Hit(ray, t_min, closest_so_far, temp))
+        if(this->volumes_[i]->Hit(ray, t_min, closest_so_far, temp))
         {
             any_hit = true;
             closest_so_far = temp.t;
@@ -29,15 +27,16 @@ CUDA_CALLABLE_MEMBER bool Scene::Hit(const Ray &ray, double t_min, double t_max,
     return any_hit;
 }
 
-CUDA_CALLABLE_MEMBER bool Scene::BoundingBox(AABB &output_box) const
+CUDA_DEVICE bool Scene::BoundingBox(AABB &output_box) const
 {
-    if (volumes_.empty()) return false;
+    if (count_ == 0) return false;
 
     AABB temp_box;
     bool first_box = true;
 
-    for (const auto& object : volumes_)
+    for (size_t i = 0; i < count_; ++i)
     {
+        const auto& object = volumes_[i];
         if (!object->BoundingBox(temp_box))
             return false;
         output_box = first_box ? temp_box : AABB::Merge(output_box, temp_box);
@@ -45,4 +44,11 @@ CUDA_CALLABLE_MEMBER bool Scene::BoundingBox(AABB &output_box) const
     }
 
     return true;
+}
+
+Scene::~Scene()
+{
+    for (size_t i = 0; i < count_; ++i)
+        CUDA_CALL(cudaFree(volumes_[i]));
+    CUDA_CALL(cudaFree(volumes_));
 }
