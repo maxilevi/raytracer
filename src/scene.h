@@ -13,13 +13,14 @@
 
 class Scene {
 public:
-    ~Scene();
-    void Build(Volume**, size_t);
+    void Dispose();
+    void Build(Volume**, Volume**, size_t);
     CUDA_DEVICE bool Hit(const Ray& ray, double t_min, double t_max, HitResult& record) const;
     CUDA_DEVICE bool BoundingBox(AABB& output_box) const;
 
 private:
     Volume** volumes_;
+    Volume** host_volumes_;
     size_t count_;
 };
 

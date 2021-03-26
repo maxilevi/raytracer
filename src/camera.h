@@ -33,7 +33,7 @@ private:
     std::unique_ptr<Vector3[]> colors_;
 
     void NormalizeFrame();
-    void ProcessRays(Scene& scene, const std::vector<std::pair<int, int>>& params);
+    void ProcessRays(Scene* scene, const std::vector<std::pair<int, int>>& params);
 };
 
 

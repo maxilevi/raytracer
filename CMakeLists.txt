@@ -8,6 +8,7 @@ file(GLOB FILES src/volumes/*.h src/volumes/*.cu src/*.cu src/*.h src/io/*.cu sr
 
 add_executable(raytracer ${FILES})
 
+set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -G")
 set_target_properties(
         raytracer
         PROPERTIES

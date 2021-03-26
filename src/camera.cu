@@ -5,7 +5,7 @@
 #include "camera.h"
 #include "gpu_tracer.h"
 
-void Camera::ProcessRays(Scene& scene, const std::vector<std::pair<int, int>>& params)
+void Camera::ProcessRays(Scene* scene, const std::vector<std::pair<int, int>>& params)
 {
     GPUTrace(scene, params, colors_.get(), width_, height_);
 }
@@ -45,7 +45,7 @@ void Camera::Draw(Scene& scene)
         }
     }
 
-    this->ProcessRays(scene, params);
+    this->ProcessRays(&scene, params);
 
     this->NormalizeFrame();
 }

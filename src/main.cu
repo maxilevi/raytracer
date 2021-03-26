@@ -54,20 +54,24 @@ int LoadScene(Scene& scene, std::chrono::time_point<std::chrono::steady_clock> t
     std::cout << "Allocating " << model->Size() << " triangles on CUDA memory... " << std::endl;
 
     size_t element_count = model->Size();
-    Volume** volumes_array;
+    //Triangle* volumes_array;
+    //CUDA_CALL(cudaMalloc(&volumes_array, element_count * sizeof(Triangle)));
+    //CUDA_CALL(cudaMemcpy(volumes_array, &model->triangles_[0], element_count * sizeof(Triangle), cudaMemcpyHostToDevice));
+    auto** host_volumes_array = new Volume*[element_count];
 
-    CUDA_CALL(cudaMalloc(&volumes_array, element_count * sizeof(Volume*)));
-
-    for(size_t i = 0; i < model->Size(); ++i)
+    for(size_t i = 0; i < element_count; ++i)
     {
         Triangle* ptr;
         CUDA_CALL(cudaMalloc(&ptr, sizeof(Triangle)));
         CUDA_CALL(cudaMemcpy(ptr, &model->triangles_[i], sizeof(Triangle), cudaMemcpyHostToDevice));
-        CUDA_CALL(cudaMemcpy(&volumes_array[i], ptr, sizeof(Triangle*), cudaMemcpyDeviceToDevice));
+        host_volumes_array[i] = ptr;
     }
+    Volume** volumes_array;
+    CUDA_CALL(cudaMalloc(&volumes_array, element_count * sizeof(Volume*)));
+    CUDA_CALL(cudaMemcpy(volumes_array, &host_volumes_array, element_count * sizeof(Volume*), cudaMemcpyHostToDevice));
 
-    scene.Build(volumes_array, element_count);
-    std::cout << "CUDA memory allocated with success" << std::endl;
+    scene.Build(host_volumes_array, volumes_array, element_count);
+    std::cout << "Allocating CUDA memory took " << TimeIt(t1) << " ms" << std::endl;
 
     //Bvh bvh(triangles, 0, triangles.size());
     //scene.push_back(bvh);
@@ -96,6 +100,9 @@ int main()
    //std::cout << "Triangle intersect calls were " << INTERSECT_CALLS << std::endl;
 
     WriteOutput("./output.tga", camera);
+
+    // ADD AN ALLOCATOR FOR THIS
+    scene.Dispose();
 
     return 0;
 }
