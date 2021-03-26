@@ -19,7 +19,7 @@ void Camera::NormalizeFrame()
             auto color = this->colors_[j * width_ + i];
 
             /* Normalize the samples for antialiasing */
-            std::cout << color << std::endl;
+            //std::cout << color << std::endl;
             color /= Camera::kAntialiasingSamples;
 
             /* Gamma correction */
