@@ -42,7 +42,6 @@ CUDA_DEVICE bool Triangle::Intersects(const Ray &ray, double &t, double& u, doub
 
 CUDA_DEVICE bool Triangle::Hit(const Ray &ray, double t_min, double t_max, HitResult &record) const
 {
-    return false;
     double t, u, v;
     if (!Intersects(ray, t, u, v)) return false;
     if (t >= t_max || t <= t_min) return false;

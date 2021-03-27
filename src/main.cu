@@ -40,37 +40,25 @@ auto TimeIt(std::chrono::time_point<std::chrono::steady_clock>& prev_time)
 
 int LoadScene(Scene& scene, std::chrono::time_point<std::chrono::steady_clock> t1)
 {
-    std::shared_ptr<TriangleList> model = LoadPLY("./../models/icosphere.ply");
+    std::shared_ptr<TriangleList> model = LoadPLY("./../models/aurelius-low.ply");
 
     std::cout << "Loaded " << model->Size() << " triangles" << std::endl;
     std::cout << "Loading the model took " << TimeIt(t1) << " ms" << std::endl;
     if(model == nullptr) return 1;
 
     std::vector<std::shared_ptr<Volume>> triangles;
-    model->Scale(Vector3(0.25));
+    model->Scale(Vector3(1));
     model->Transform(Matrix3::FromEuler({0, 180, 0}));
     model->Translate(Vector3(0, 0, -0.5));
 
     std::cout << "Allocating " << model->Size() << " triangles on CUDA memory... " << std::endl;
 
     size_t element_count = model->Size();
-    //Triangle* volumes_array;
-    //CUDA_CALL(cudaMalloc(&volumes_array, element_count * sizeof(Triangle)));
-    //CUDA_CALL(cudaMemcpy(volumes_array, &model->triangles_[0], element_count * sizeof(Triangle), cudaMemcpyHostToDevice));
-    auto** host_volumes_array = new Volume*[element_count];
+    Triangle* volumes_array;
+    CUDA_CALL(cudaMalloc(&volumes_array, element_count * sizeof(Triangle)));
+    CUDA_CALL(cudaMemcpy(volumes_array, &model->triangles_[0], element_count * sizeof(Triangle), cudaMemcpyHostToDevice));
 
-    for(size_t i = 0; i < element_count; ++i)
-    {
-        Triangle* ptr;
-        CUDA_CALL(cudaMalloc(&ptr, sizeof(Triangle)));
-        CUDA_CALL(cudaMemcpy(ptr, &model->triangles_[i], sizeof(Triangle), cudaMemcpyHostToDevice));
-        host_volumes_array[i] = ptr;
-    }
-    Volume** volumes_array;
-    CUDA_CALL(cudaMalloc(&volumes_array, element_count * sizeof(Volume*)));
-    CUDA_CALL(cudaMemcpy(volumes_array, &host_volumes_array, element_count * sizeof(Volume*), cudaMemcpyHostToDevice));
-
-    scene.Build(host_volumes_array, volumes_array, element_count);
+    scene.Build(volumes_array, element_count);
     std::cout << "Allocating CUDA memory took " << TimeIt(t1) << " ms" << std::endl;
 
     //Bvh bvh(triangles, 0, triangles.size());
@@ -91,7 +79,7 @@ int main()
         return r;
 
     /* Camera */
-    Camera camera(1920 / 2, 1080 / 2);
+    Camera camera(1920 / 4, 1080 / 4);
 
     camera.Draw(scene);
 

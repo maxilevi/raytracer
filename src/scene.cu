@@ -5,9 +5,8 @@
 #include "scene.h"
 #include "volumes/triangle.h"
 
-void Scene::Build(Volume** host_volumes, Volume** device_volumes, size_t count)
+void Scene::Build(Triangle* device_volumes, size_t count)
 {
-    this->host_volumes_ = host_volumes;
     this->volumes_ = device_volumes;
     this->count_ = count;
 }
@@ -19,8 +18,7 @@ CUDA_DEVICE bool Scene::Hit(const Ray &ray, double t_min, double t_max, HitResul
     double closest_so_far = t_max;
     for (size_t i = 0; i < count_; ++i)
     {
-        auto* tri = (Triangle*)this->volumes_[i];
-        if(this->volumes_[i]->Hit(ray, t_min, closest_so_far, temp))
+        if(this->volumes_[i].Hit(ray, t_min, closest_so_far, temp))
         {
             any_hit = true;
             closest_so_far = temp.t;
@@ -40,7 +38,7 @@ CUDA_DEVICE bool Scene::BoundingBox(AABB &output_box) const
     for (size_t i = 0; i < count_; ++i)
     {
         const auto& object = volumes_[i];
-        if (!object->BoundingBox(temp_box))
+        if (!object.BoundingBox(temp_box))
             return false;
         output_box = first_box ? temp_box : AABB::Merge(output_box, temp_box);
         first_box = false;
@@ -51,8 +49,5 @@ CUDA_DEVICE bool Scene::BoundingBox(AABB &output_box) const
 
 void Scene::Dispose()
 {
-    for (size_t i = 0; i < count_; ++i)
-        CUDA_CALL(cudaFree(host_volumes_[i]));
     CUDA_CALL(cudaFree(volumes_));
-    delete[] host_volumes_;
 }

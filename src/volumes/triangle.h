@@ -44,9 +44,10 @@ public:
     void Transform(Matrix3 transformation);
 
     friend std::ostream& operator<<(std::ostream& stream, const Triangle& triangle);
-    Vector3 v_[3];
+
 private:
     CUDA_DEVICE bool Intersects(const Ray &ray, double &t, double& u, double &v) const;
+    Vector3 v_[3];
     Vector3 n_[3];
 };
 

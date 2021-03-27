@@ -7,7 +7,7 @@
 #include "math/ray.h"
 #include "camera.h"
 
-#define THREAD_COUNT 512
+#define THREAD_COUNT 1024
 #define PI 3.14159265
 #define MAX_DOUBLE DBL_MAX
 #define MIN(x, y) x < y ? x : y
@@ -42,13 +42,13 @@ CUDA_DEVICE Vector3 BackgroundColor(const Ray& ray)
     return (1.0 - t) * Vector3(1) + t * Vector3(0.5, 0.7, 1.0);
 }
 
-CUDA_DEVICE Vector3 Color(Scene* scene, const Ray& ray, uint32_t& seed)
+CUDA_DEVICE Vector3 Color(Scene& scene, const Ray& ray, uint32_t& seed)
 {
     Ray current_ray = ray;
     HitResult result;
     Vector3 color = Vector3(1);
     int iteration = 0;
-    while (scene->Hit(current_ray, 0.001, MAX_DOUBLE, result))
+    while (scene.Hit(current_ray, 0.001, MAX_DOUBLE, result))
     {
         Vector3 target_direction = result.Normal + RandomPointOnUnitSphere(seed);
         current_ray = Ray(result.Point, target_direction);
@@ -60,7 +60,7 @@ CUDA_DEVICE Vector3 Color(Scene* scene, const Ray& ray, uint32_t& seed)
 }
 
 __global__
-void CUDAColor(Scene* scene, Vector3* out_colors, const int* device_params, int n, int width, int height, Vector3 origin, Vector3 screen, Vector3 step_x, Vector3 step_y)
+void ColorKernel(Scene scene, Vector3* out_colors, const int* device_params, int n, int width, int height, Vector3 origin, Vector3 screen, Vector3 step_x, Vector3 step_y)
 {
     int tid = threadIdx.x;
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
@@ -77,7 +77,7 @@ void CUDAColor(Scene* scene, Vector3* out_colors, const int* device_params, int 
     out_colors[idx] = Color(scene, r, seed);
 }
 
-void GPUTrace(Scene* scene, const std::vector<std::pair<int, int>>& params, Vector3* colors, int width, int height)
+void GPUTrace(Scene& scene, const std::vector<std::pair<int, int>>& params, Vector3* colors, int width, int height)
 {
     double screen_ratio = (double(width) / double(height));
     Vector3 origin(0, 0, 0);
@@ -86,20 +86,16 @@ void GPUTrace(Scene* scene, const std::vector<std::pair<int, int>>& params, Vect
     Vector3 step_y(0, 2, 0);
 
     int n = params.size();
-    int step = n / 4;
+    int step = n / 2;
 
     std::cout << "Total samples to process = " << n << std::endl;
 
     Vector3* out_colors;
     int* device_params;
     auto* all_samples = new Vector3[step];
-    Scene* in_scene;
 
     CUDA_CALL(cudaMalloc(&device_params, step * 2 * sizeof(int)));
     CUDA_CALL(cudaMalloc(&out_colors, step * sizeof(Vector3)));
-
-    CUDA_CALL(cudaMalloc(&in_scene, sizeof(Scene)));
-    CUDA_CALL(cudaMemcpy(in_scene, scene, sizeof(Scene), cudaMemcpyHostToDevice));
 
     for(size_t w = 0; w < n; w += step)
     {
@@ -110,7 +106,7 @@ void GPUTrace(Scene* scene, const std::vector<std::pair<int, int>>& params, Vect
 
         CUDA_CALL(cudaMemcpy(device_params, &params[0] + w, size * 2 * sizeof(int), cudaMemcpyHostToDevice));
 
-        CUDAColor<<<blocks, THREAD_COUNT>>>(in_scene, out_colors, device_params, size, width, height, origin, screen, step_x, step_y);
+        ColorKernel<<<blocks, THREAD_COUNT>>>(scene, out_colors, device_params, size, width, height, origin, screen, step_x, step_y);
 
         CUDA_CALL(cudaPeekAtLastError())
         CUDA_CALL(cudaDeviceSynchronize());
@@ -133,9 +129,18 @@ void GPUTrace(Scene* scene, const std::vector<std::pair<int, int>>& params, Vect
     }
 
     delete[] all_samples;
-    CUDA_CALL(cudaFree(in_scene));
     CUDA_CALL(cudaFree(out_colors));
     CUDA_CALL(cudaFree(device_params));
 
     std::cout << "Finished CUDA work." << std::endl;
+}
+
+__global__ void BvhKernel()
+{
+
+}
+
+void BuildBvh()
+{
+    BvhKernel<<1, 1>>();
 }
