@@ -4,6 +4,8 @@ wip raytracer written from scratch in C++. the program processes a defined scene
 
 # eye-candy
 
+![](screenshots/statue.png)
+
 ![](screenshots/diffuse_big.png)
 
 # how it works
