@@ -6,6 +6,8 @@ wip raytracer written from scratch in C++. the program processes a defined scene
 
 ![](screenshots/diffuse_big.png)
 
+![](screenshots/statue.png)
+
 # how it works
 
 ## overview
