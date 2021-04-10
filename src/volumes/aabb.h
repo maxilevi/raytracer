@@ -13,8 +13,8 @@ public:
     AABB() = default;
     CUDA_DEVICE AABB(const Vector3& min, const Vector3& max) : min_(min), max_(max) {};
 
-    [[nodiscard]] inline const Vector3& Min() const { return min_; }
-    [[nodiscard]] inline const Vector3& Max() const { return max_; }
+    CUDA_DEVICE inline const Vector3& Min() const { return min_; }
+    CUDA_DEVICE inline const Vector3& Max() const { return max_; }
 
     CUDA_DEVICE inline bool Hit(const Ray& ray, double t_min, double t_max) const
     {

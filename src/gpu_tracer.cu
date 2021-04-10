@@ -6,25 +6,13 @@
 #include "defines.h"
 #include "math/ray.h"
 #include "camera.h"
+#include "volumes/bvh.h"
+#include "kernel/random.h"
 
 #define THREAD_COUNT 1024
 #define PI 3.14159265
 #define MAX_DOUBLE DBL_MAX
 #define MIN(x, y) x < y ? x : y
-
-CUDA_DEVICE double RandomDouble(uint32_t& seed)
-{
-    int k;
-    int s = int(seed);
-    if (s == 0)
-        s = 305420679;
-    k = s / 127773;
-    s = 16807 * (s - k * 127773) - 2836 * k;
-    if (s < 0)
-        s += 2147483647;
-    seed = uint32_t(s);
-    return double(seed % uint32_t(65536)) / 65535.0;
-}
 
 CUDA_DEVICE Vector3 RandomPointOnUnitSphere(uint32_t& seed)
 {
@@ -135,12 +123,62 @@ void GPUTrace(Scene& scene, const std::vector<std::pair<int, int>>& params, Vect
     std::cout << "Finished CUDA work." << std::endl;
 }
 
-__global__ void BvhKernel()
+__global__ void NewBvhKernel(Bvh** bvh, Vector3* triangle_data, int n)
 {
-
+    auto** volumes = new Volume*[n];
+    int j = 0;
+    for(int i = 0; i < n; i++)
+    {
+        volumes[i] = new Triangle(
+            triangle_data[j+0],
+            triangle_data[j+1],
+            triangle_data[j+2],
+            triangle_data[j+3],
+            triangle_data[j+4],
+            triangle_data[j+5]
+        );
+        j += 6;
+    }
+    *bvh = new Bvh(volumes, 0, n);
 }
 
-void BuildBvh()
+__global__ void DeleteBvhKernel(Bvh* bvh)
 {
-    BvhKernel<<1, 1>>();
+    for(size_t i = 0; i < bvh->volumes_size; ++i)
+    {
+        delete (Triangle*) bvh->volumes[i];
+    }
+    delete bvh->volumes;
+    delete bvh;
+}
+
+Bvh* BuildBvh(std::shared_ptr<TriangleList> model)
+{
+    Vector3* triangles;
+    CUDA_CALL(cudaMalloc(&triangles, sizeof(Triangle) * model->Size()));
+    CUDA_CALL(cudaMemcpy(triangles, model->triangles_.get(), sizeof(Triangle) * model->Size(), cudaMemcpyHostToDevice));
+
+    std::cout << "Loaded model into CUDA memory" << std::endl;
+
+    Bvh** res;
+    CUDA_CALL(cudaMallocManaged(&res, sizeof(Bvh*)));
+    NewBvhKernel<<<1, 1>>>(res, triangles, (int) model->Size());
+    cudaDeviceSynchronize();
+
+    std::cout << "CUDA kernel loaded." << std::endl;
+    Bvh* bvh = *res;
+    std::cout << "Returning BVH..3" << std::endl;
+    CUDA_CALL(cudaFree(triangles));
+    std::cout << "Returning BVH...1" << std::endl;
+    CUDA_CALL(cudaFree(res));
+
+    std::cout << "Returning BVH..." << std::endl;
+
+    return bvh;
+}
+
+void DeleteBvh(Bvh* bvh)
+{
+    DeleteBvhKernel<<<1, 1>>>(bvh);
+    cudaDeviceSynchronize();
 }

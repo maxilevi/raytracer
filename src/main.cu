@@ -46,19 +46,13 @@ int LoadScene(Scene& scene, std::chrono::time_point<std::chrono::steady_clock> t
     std::cout << "Loading the model took " << TimeIt(t1) << " ms" << std::endl;
     if(model == nullptr) return 1;
 
-    std::vector<std::shared_ptr<Volume>> triangles;
     model->Scale(Vector3(1));
     model->Transform(Matrix3::FromEuler({0, 180, 0}));
     model->Translate(Vector3(0, 0, -0.5));
 
     std::cout << "Allocating " << model->Size() << " triangles on CUDA memory... " << std::endl;
 
-    size_t element_count = model->Size();
-    Triangle* volumes_array;
-    CUDA_CALL(cudaMalloc(&volumes_array, element_count * sizeof(Triangle)));
-    CUDA_CALL(cudaMemcpy(volumes_array, &model->triangles_[0], element_count * sizeof(Triangle), cudaMemcpyHostToDevice));
-
-    scene.Build(volumes_array, element_count);
+    scene.Build(model);
     std::cout << "Allocating CUDA memory took " << TimeIt(t1) << " ms" << std::endl;
 
     //Bvh bvh(triangles, 0, triangles.size());

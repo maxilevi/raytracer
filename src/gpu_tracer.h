@@ -8,9 +8,11 @@
 #include "scene.h"
 #include <vector>
 #include "math/vector3.h"
+#include "volumes/bvh.h"
 
 void GPUTrace(Scene& scene, const std::vector<std::pair<int, int>>& params, Vector3* colors, int width, int height);
 
-void BuildBvh();
+Bvh* BuildBvh(std::shared_ptr<TriangleList> triangles);
+void DeleteBvh(Bvh* bvh);
 
 #endif //RAYTRACER_GPU_TRACER_H

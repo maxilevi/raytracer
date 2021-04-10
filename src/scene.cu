@@ -4,11 +4,12 @@
 
 #include "scene.h"
 #include "volumes/triangle.h"
+#include "gpu_tracer.h"
 
-void Scene::Build(Triangle* device_volumes, size_t count)
+void Scene::Build(std::shared_ptr<TriangleList> triangles)
 {
-    this->volumes_ = device_volumes;
-    this->count_ = count;
+    this->volumes_ = BuildBvh(triangles);
+    this->count_ = 1;
 }
 
 CUDA_DEVICE bool Scene::Hit(const Ray &ray, double t_min, double t_max, HitResult &record) const
@@ -47,7 +48,8 @@ CUDA_DEVICE bool Scene::BoundingBox(AABB &output_box) const
     return true;
 }
 
-void Scene::Dispose()
+void Scene::Dispose() const
 {
-    CUDA_CALL(cudaFree(volumes_));
+    DeleteBvh((Bvh*)volumes_);
 }
+
