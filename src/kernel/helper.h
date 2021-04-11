@@ -5,6 +5,8 @@
 #ifndef RAYTRACER_HELPER_H
 #define RAYTRACER_HELPER_H
 
+// #include <helper_cuda.h>
+
 #if __CUDA_ARCH__ >= 200
 #include <stdio.h>
 #define CUDA_PRINT(x) { printf(x); }
@@ -14,8 +16,11 @@
 
 #define CUDA_DEVICE __device__
 #define CUDA_HOST_DEVICE CUDA_DEVICE __host__
+#if 1
 #define CUDA_CALL(x) {cudaError_t cuda_error__ = (x); if (cuda_error__) printf("CUDA error: " #x " returned \"%s\"\n", cudaGetErrorString(cuda_error__));}
-
+#else
+#define CUDA_CALL(x) checkCudaErrors(x)
+#endif
 #include <cfloat>
 
 #define MIN(x, y) ((x) < (y) ? (x) : (y))

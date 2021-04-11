@@ -37,7 +37,7 @@ auto TimeIt(std::chrono::time_point<std::chrono::steady_clock>& prev_time)
 
 int LoadScene(Scene& scene, std::chrono::time_point<std::chrono::steady_clock> t1)
 {
-    std::shared_ptr<TriangleModel> model = LoadPLY("./../models/test.ply");
+    std::shared_ptr<TriangleModel> model = LoadPLY("./../models/icosphere.ply");
 
     std::cout << "Loaded " << model->Size() << " triangles" << std::endl;
     std::cout << "Loading the model took " << TimeIt(t1) << " ms" << std::endl;

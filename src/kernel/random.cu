@@ -20,5 +20,5 @@ __host__ __device__ double RandomDouble(uint32_t& seed)
 
 __host__ __device__ int RandomInt(uint32_t& seed, int min, int max)
 {
-    return RandomDouble(seed) * max + min;
+    return (int) (RandomDouble(seed) * max + min);
 }

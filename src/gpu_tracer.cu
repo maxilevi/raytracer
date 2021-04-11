@@ -136,6 +136,7 @@ __global__ void NewBvhKernel(Vector3* triangle_data, int n)
             triangle_data[j+5]
         );
     }
+
     bvh_ = new Bvh(volumes, 0, n);
 }
 
@@ -151,13 +152,16 @@ __global__ void DeleteBvhKernel()
 
 void BuildBvh(std::shared_ptr<TriangleModel> model)
 {
+    std::vector<BvhRange> bvh_ranges;
+    Bvh::BuildBvhRanges(bvh_ranges, model);
+
     Vector3* triangles;
     CUDA_CALL(cudaMalloc(&triangles, sizeof(Triangle) * model->Size()));
     CUDA_CALL(cudaMemcpy(triangles, model->triangles_.get(), sizeof(Triangle) * model->Size(), cudaMemcpyHostToDevice));
 
     std::cout << "Loaded model into CUDA memory " << (int) model->Size() << std::endl;
 
-    NewBvhKernel<<<1, 1>>>(triangles, (int) model->Size());
+    NewBvhKernel<<<1, 1>>>(triangles, (int) 8);//model->Size());
     cudaDeviceSynchronize();
 
     std::cout << "CUDA kernel loaded." << std::endl;
