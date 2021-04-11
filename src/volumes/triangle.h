@@ -13,8 +13,8 @@
 
 class Triangle : public Volume {
 public:
-    Triangle() {};
-    Triangle(Vector3 v0, Vector3 v1, Vector3 v2)
+    CUDA_HOST_DEVICE Triangle() {};
+    CUDA_HOST_DEVICE Triangle(Vector3 v0, Vector3 v1, Vector3 v2)
     {
         v_[0] = v0;
         v_[1] = v1;
@@ -26,7 +26,7 @@ public:
         n_[2] = normal;
     };
 
-    CUDA_DEVICE Triangle(Vector3 v0, Vector3 v1, Vector3 v2, Vector3 n0, Vector3 n1, Vector3 n2)
+    CUDA_HOST_DEVICE Triangle(Vector3 v0, Vector3 v1, Vector3 v2, Vector3 n0, Vector3 n1, Vector3 n2)
     {
         v_[0] = v0;
         v_[1] = v1;

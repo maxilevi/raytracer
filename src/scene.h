@@ -9,17 +9,17 @@
 #include "volumes/triangle.h"
 #include "kernel/kernel_vector.h"
 #include "kernel/kernel_ptr.h"
-#include "volumes/triangle_list.h"
+#include "io/triangle_model.h"
 
 class Scene {
 public:
-    void Build(std::shared_ptr<TriangleList>);
+    void Build(std::shared_ptr<TriangleModel>);
     CUDA_DEVICE bool Hit(const Ray& ray, double t_min, double t_max, HitResult& record) const;
     CUDA_DEVICE bool BoundingBox(AABB& output_box) const;
     void Dispose() const;
 
 private:
-    Volume* volumes_;
+    Volume** volumes_;
     size_t count_;
 };
 

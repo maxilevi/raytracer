@@ -4,7 +4,7 @@
 
 #ifndef RAYTRACER_KERNEL_PTR_H
 #define RAYTRACER_KERNEL_PTR_H
-#include "../defines.h"
+#include "helper.h"
 
 template<class T>
 class kernel_ptr {

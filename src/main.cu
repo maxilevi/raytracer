@@ -1,12 +1,9 @@
-#include "defines.h"
+#include "kernel/helper.h"
 #include <iostream>
 #include "math/vector3.h"
 #include "camera.h"
 #include "io/tga.h"
 #include "io/ply.h"
-#include "volumes/bvh.h"
-#include "kernel/kernel_ptr.h"
-#include "kernel/kernel_vector.h"
 #include <chrono>
 #include <string>
 #include <cstdint>
@@ -40,7 +37,7 @@ auto TimeIt(std::chrono::time_point<std::chrono::steady_clock>& prev_time)
 
 int LoadScene(Scene& scene, std::chrono::time_point<std::chrono::steady_clock> t1)
 {
-    std::shared_ptr<TriangleList> model = LoadPLY("./../models/aurelius-low.ply");
+    std::shared_ptr<TriangleModel> model = LoadPLY("./../models/test.ply");
 
     std::cout << "Loaded " << model->Size() << " triangles" << std::endl;
     std::cout << "Loading the model took " << TimeIt(t1) << " ms" << std::endl;

@@ -3,7 +3,6 @@
  */
 
 #include "aabb.h"
-#include <algorithm>
 
 CUDA_DEVICE AABB AABB::Merge(const AABB &a, const AABB &b)
 {
@@ -11,8 +10,8 @@ CUDA_DEVICE AABB AABB::Merge(const AABB &a, const AABB &b)
 
     for(int i = 0; i < 3; ++i)
     {
-        min[i] = std::min(a.min_[i], b.min_[i]);
-        max[i] = std::max(a.max_[i], b.max_[i]);
+        min[i] = MIN(a.min_[i], b.min_[i]);
+        max[i] = MAX(a.max_[i], b.max_[i]);
     }
 
     return {min, max};

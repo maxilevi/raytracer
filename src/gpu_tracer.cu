@@ -3,16 +3,15 @@
  */
 
 #include "gpu_tracer.h"
-#include "defines.h"
+#include "kernel/helper.h"
 #include "math/ray.h"
 #include "camera.h"
 #include "volumes/bvh.h"
 #include "kernel/random.h"
 
 #define THREAD_COUNT 1024
-#define PI 3.14159265
-#define MAX_DOUBLE DBL_MAX
-#define MIN(x, y) x < y ? x : y
+
+__device__ Bvh* bvh_;
 
 CUDA_DEVICE Vector3 RandomPointOnUnitSphere(uint32_t& seed)
 {
@@ -36,7 +35,7 @@ CUDA_DEVICE Vector3 Color(Scene& scene, const Ray& ray, uint32_t& seed)
     HitResult result;
     Vector3 color = Vector3(1);
     int iteration = 0;
-    while (scene.Hit(current_ray, 0.001, MAX_DOUBLE, result))
+    while (bvh_->Hit(current_ray, 0.001, MAX_DOUBLE, result))
     {
         Vector3 target_direction = result.Normal + RandomPointOnUnitSphere(seed);
         current_ray = Ray(result.Point, target_direction);
@@ -50,7 +49,6 @@ CUDA_DEVICE Vector3 Color(Scene& scene, const Ray& ray, uint32_t& seed)
 __global__
 void ColorKernel(Scene scene, Vector3* out_colors, const int* device_params, int n, int width, int height, Vector3 origin, Vector3 screen, Vector3 step_x, Vector3 step_y)
 {
-    int tid = threadIdx.x;
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= n) return;
 
@@ -123,13 +121,13 @@ void GPUTrace(Scene& scene, const std::vector<std::pair<int, int>>& params, Vect
     std::cout << "Finished CUDA work." << std::endl;
 }
 
-__global__ void NewBvhKernel(Bvh** bvh, Vector3* triangle_data, int n)
+__global__ void NewBvhKernel(Vector3* triangle_data, int n)
 {
     auto** volumes = new Volume*[n];
-    int j = 0;
     for(int i = 0; i < n; i++)
     {
-        volumes[i] = new Triangle(
+        int j = i * 6;
+        volumes[i] = (Volume*) new Triangle(
             triangle_data[j+0],
             triangle_data[j+1],
             triangle_data[j+2],
@@ -137,48 +135,40 @@ __global__ void NewBvhKernel(Bvh** bvh, Vector3* triangle_data, int n)
             triangle_data[j+4],
             triangle_data[j+5]
         );
-        j += 6;
     }
-    *bvh = new Bvh(volumes, 0, n);
+    bvh_ = new Bvh(volumes, 0, n);
 }
 
-__global__ void DeleteBvhKernel(Bvh* bvh)
+__global__ void DeleteBvhKernel()
 {
-    for(size_t i = 0; i < bvh->volumes_size; ++i)
+    for(size_t i = 0; i < bvh_->volumes_size; ++i)
     {
-        delete (Triangle*) bvh->volumes[i];
+        delete (Triangle*) bvh_->volumes[i];
     }
-    delete bvh->volumes;
-    delete bvh;
+    delete bvh_->volumes;
+    delete bvh_;
 }
 
-Bvh* BuildBvh(std::shared_ptr<TriangleList> model)
+void BuildBvh(std::shared_ptr<TriangleModel> model)
 {
     Vector3* triangles;
     CUDA_CALL(cudaMalloc(&triangles, sizeof(Triangle) * model->Size()));
     CUDA_CALL(cudaMemcpy(triangles, model->triangles_.get(), sizeof(Triangle) * model->Size(), cudaMemcpyHostToDevice));
 
-    std::cout << "Loaded model into CUDA memory" << std::endl;
+    std::cout << "Loaded model into CUDA memory " << (int) model->Size() << std::endl;
 
-    Bvh** res;
-    CUDA_CALL(cudaMallocManaged(&res, sizeof(Bvh*)));
-    NewBvhKernel<<<1, 1>>>(res, triangles, (int) model->Size());
+    NewBvhKernel<<<1, 1>>>(triangles, (int) model->Size());
     cudaDeviceSynchronize();
 
     std::cout << "CUDA kernel loaded." << std::endl;
-    Bvh* bvh = *res;
-    std::cout << "Returning BVH..3" << std::endl;
     CUDA_CALL(cudaFree(triangles));
-    std::cout << "Returning BVH...1" << std::endl;
-    CUDA_CALL(cudaFree(res));
 
-    std::cout << "Returning BVH..." << std::endl;
-
-    return bvh;
+    std::cout << "Returning BVH... " << std::endl;
 }
 
-void DeleteBvh(Bvh* bvh)
+void DeleteBvh()
 {
-    DeleteBvhKernel<<<1, 1>>>(bvh);
+    DeleteBvhKernel<<<1, 1>>>();
     cudaDeviceSynchronize();
+    //CUDA_CALL(cudaFree(bvh));
 }

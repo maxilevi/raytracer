@@ -12,7 +12,7 @@
 
 void GPUTrace(Scene& scene, const std::vector<std::pair<int, int>>& params, Vector3* colors, int width, int height);
 
-Bvh* BuildBvh(std::shared_ptr<TriangleList> triangles);
-void DeleteBvh(Bvh* bvh);
+void BuildBvh(std::shared_ptr<TriangleModel> triangles);
+void DeleteBvh();
 
 #endif //RAYTRACER_GPU_TRACER_H

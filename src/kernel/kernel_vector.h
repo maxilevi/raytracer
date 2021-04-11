@@ -5,7 +5,7 @@
 #ifndef RAYTRACER_KERNEL_VECTOR_H
 #define RAYTRACER_KERNEL_VECTOR_H
 
-#include "../defines.h"
+#include "helper.h"
 
 template<class T> class kernel_vector {
 public:

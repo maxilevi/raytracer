@@ -11,7 +11,7 @@
 #include <sstream>
 #include <regex>
 #include "../volumes/triangle.h"
-#include "../volumes/triangle_list.h"
+#include "triangle_model.h"
 
 bool ProcessHeader(const std::string& line, bool& is_header, int& vertex_count, int& triangle_count, bool& has_vertices, bool& has_normals, bool& has_uvs)
 {
@@ -100,7 +100,7 @@ bool ProcessBody(const std::string& line, std::vector<Vector3>& vertices, std::v
 }
 
 
-std::unique_ptr<TriangleList> LoadPLY(const std::string& path)
+std::unique_ptr<TriangleModel> LoadPLY(const std::string& path)
 {
     std::unique_ptr<Triangle[]> triangles;
     std::string token_buffer[9];
@@ -131,7 +131,7 @@ std::unique_ptr<TriangleList> LoadPLY(const std::string& path)
                 return nullptr;
         }
     }
-    return std::make_unique<TriangleList>(std::move(triangles), triangle_count);
+    return std::make_unique<TriangleModel>(std::move(triangles), triangle_count);
 }
 
 

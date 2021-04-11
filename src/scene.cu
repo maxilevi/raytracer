@@ -6,9 +6,9 @@
 #include "volumes/triangle.h"
 #include "gpu_tracer.h"
 
-void Scene::Build(std::shared_ptr<TriangleList> triangles)
+void Scene::Build(std::shared_ptr<TriangleModel> triangles)
 {
-    this->volumes_ = BuildBvh(triangles);
+    BuildBvh(triangles);
     this->count_ = 1;
 }
 
@@ -19,7 +19,7 @@ CUDA_DEVICE bool Scene::Hit(const Ray &ray, double t_min, double t_max, HitResul
     double closest_so_far = t_max;
     for (size_t i = 0; i < count_; ++i)
     {
-        if(this->volumes_[i].Hit(ray, t_min, closest_so_far, temp))
+        if(this->volumes_[i]->Hit(ray, t_min, closest_so_far, temp))
         {
             any_hit = true;
             closest_so_far = temp.t;
@@ -39,7 +39,7 @@ CUDA_DEVICE bool Scene::BoundingBox(AABB &output_box) const
     for (size_t i = 0; i < count_; ++i)
     {
         const auto& object = volumes_[i];
-        if (!object.BoundingBox(temp_box))
+        if (!object->BoundingBox(temp_box))
             return false;
         output_box = first_box ? temp_box : AABB::Merge(output_box, temp_box);
         first_box = false;
@@ -50,6 +50,6 @@ CUDA_DEVICE bool Scene::BoundingBox(AABB &output_box) const
 
 void Scene::Dispose() const
 {
-    DeleteBvh((Bvh*)volumes_);
+    DeleteBvh();
 }
 

@@ -10,7 +10,7 @@
 
 class AABB {
 public:
-    AABB() = default;
+    CUDA_DEVICE AABB() : min_(Vector3()), max_(Vector3()) {};
     CUDA_DEVICE AABB(const Vector3& min, const Vector3& max) : min_(min), max_(max) {};
 
     CUDA_DEVICE inline const Vector3& Min() const { return min_; }

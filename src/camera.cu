@@ -1,7 +1,7 @@
 /*
  * Created by Maximiliano Levi on 21/02/2021.
  */
-#include "defines.h"
+#include "kernel/helper.h"
 #include "camera.h"
 #include "gpu_tracer.h"
 
