@@ -7,12 +7,12 @@
 
 CUDA_DEVICE bool GPUBvh::Hit(const Ray &ray, double t_min, double t_max, HitResult &record) const
 {
-    /*
+/*
     for(int i = 0; i < this->triangle_count; ++i)
         if (this->gpu_triangles[i].Hit(ray, t_min, t_max, record))
             return true;
     return false;
-     */
+*/
     vector<GPUBvhNode> stack;
     stack.push_back(this->bvh_nodes[this->starting_node]);
 
@@ -33,8 +33,8 @@ CUDA_DEVICE bool GPUBvh::Hit(const Ray &ray, double t_min, double t_max, HitResu
             GPUBvhNode left = this->bvh_nodes[node.left_child];
             GPUBvhNode right = this->bvh_nodes[node.right_child];
 
-            stack.push_back(left);
             stack.push_back(right);
+            stack.push_back(left);
         }
     }
     return false;
