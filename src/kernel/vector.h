@@ -2,14 +2,14 @@
  * Created by Maximiliano Levi on 3/21/2021.
  */
 
-#ifndef RAYTRACER_KERNEL_VECTOR_H
-#define RAYTRACER_KERNEL_VECTOR_H
+#ifndef RAYTRACER_VECTOR_H
+#define RAYTRACER_VECTOR_H
 
 #include "helper.h"
 
-template<class T> class kernel_vector {
+template<class T> class vector {
 public:
-    CUDA_DEVICE kernel_vector()
+    CUDA_DEVICE vector()
     {
         array_ = nullptr;
         count_ = 0;
@@ -17,10 +17,10 @@ public:
         this->resize(8);
     }
 
-    CUDA_DEVICE ~kernel_vector()
+    CUDA_DEVICE ~vector()
     {
         if (array_ != nullptr)
-            CUDA_CALL(cudaFree(array_));
+            delete array_;
     }
 
     CUDA_DEVICE void push_back(T &element)
@@ -28,13 +28,6 @@ public:
         if (count_ == array_size_)
             this->resize(array_size_ * 2);
         array_[count_++] = element;
-    }
-
-    CUDA_DEVICE void push_back(T &&element)
-    {
-        if (count_ == array_size_)
-            this->resize(array_size_ * 2);
-        array_[count_++] = static_cast<T&&>(element);
     }
 
     CUDA_DEVICE inline size_t size() const
@@ -57,14 +50,19 @@ public:
         return this->array_[index];
     }
 
+    CUDA_DEVICE inline T& pop()
+    {
+        return array_[--count_];
+    }
+
 private:
     CUDA_DEVICE void resize(size_t new_size)
     {
         T* old_ptr = this->array_;
-        CUDA_CALL(cudaMalloc(&this->array_, new_size * sizeof(T)));
+        this->array_ = new T[new_size];
         if (old_ptr != nullptr) {
-            CUDA_CALL(cudaMemcpy(this->array_, old_ptr, count_ * sizeof(T), cudaMemcpyDeviceToDevice));
-            CUDA_CALL(cudaFree(old_ptr));
+            memcpy(this->array_, old_ptr, count_ * sizeof(T));
+            delete old_ptr;
         }
         this->array_size_ = new_size;
     }
@@ -74,4 +72,4 @@ private:
     size_t array_size_;
 };
 
-#endif //RAYTRACER_KERNEL_VECTOR_H
+#endif //RAYTRACER_VECTOR_H

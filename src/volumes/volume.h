@@ -10,18 +10,9 @@
 #include "../math/ray.h"
 #include "aabb.h"
 
-struct HitResult
-{
-    CUDA_DEVICE HitResult() {};
-    double t = 0;
-    Vector3 Point;
-    Vector3 Normal;
-};
-
 class Volume {
 public:
-    CUDA_DEVICE virtual bool Hit(const Ray& ray, double t_min, double t_max, HitResult& record) const = 0;
-    CUDA_DEVICE virtual bool BoundingBox(AABB& bounding_box) const = 0;
+    virtual bool BoundingBox(AABB& bounding_box) const = 0;
 };
 
 

@@ -6,50 +6,21 @@
 #include "volumes/triangle.h"
 #include "gpu_tracer.h"
 
-void Scene::Build(std::shared_ptr<TriangleModel> triangles)
+void Scene::Add(std::shared_ptr<TriangleModel> model)
 {
-    BuildBvh(triangles);
-    this->count_ = 1;
+    this->model_ = TriangleModel::Merge(model_ != nullptr ? model_.get() : nullptr, model.get());
 }
 
-CUDA_DEVICE bool Scene::Hit(const Ray &ray, double t_min, double t_max, HitResult &record) const
+void Scene::BuildBvh()
 {
-    HitResult temp;
-    bool any_hit = false;
-    double closest_so_far = t_max;
-    for (size_t i = 0; i < count_; ++i)
+    if (model_ == nullptr)
+        throw std::invalid_argument("Scene is empty");
+
+    std::vector<std::shared_ptr<Triangle>> triangles;
+    for(size_t i = 0; i < model_->Size(); ++i)
     {
-        if(this->volumes_[i]->Hit(ray, t_min, closest_so_far, temp))
-        {
-            any_hit = true;
-            closest_so_far = temp.t;
-            record = temp;
-        }
-    }
-    return any_hit;
-}
-
-CUDA_DEVICE bool Scene::BoundingBox(AABB &output_box) const
-{
-    if (count_ == 0) return false;
-
-    AABB temp_box;
-    bool first_box = true;
-
-    for (size_t i = 0; i < count_; ++i)
-    {
-        const auto& object = volumes_[i];
-        if (!object->BoundingBox(temp_box))
-            return false;
-        output_box = first_box ? temp_box : AABB::Merge(output_box, temp_box);
-        first_box = false;
+        triangles.push_back(std::make_shared<Triangle>(model_->triangles_[i]));
     }
 
-    return true;
+    this->bvh_ = std::unique_ptr<Bvh>(new Bvh(triangles, 0, model_->Size()));
 }
-
-void Scene::Dispose() const
-{
-    DeleteBvh();
-}
-

@@ -13,8 +13,8 @@
 
 class Triangle : public Volume {
 public:
-    CUDA_HOST_DEVICE Triangle() {};
-    CUDA_HOST_DEVICE Triangle(Vector3 v0, Vector3 v1, Vector3 v2)
+    Triangle() {};
+    Triangle(Vector3 v0, Vector3 v1, Vector3 v2)
     {
         v_[0] = v0;
         v_[1] = v1;
@@ -26,7 +26,7 @@ public:
         n_[2] = normal;
     };
 
-    CUDA_HOST_DEVICE Triangle(Vector3 v0, Vector3 v1, Vector3 v2, Vector3 n0, Vector3 n1, Vector3 n2)
+    Triangle(Vector3 v0, Vector3 v1, Vector3 v2, Vector3 n0, Vector3 n1, Vector3 n2)
     {
         v_[0] = v0;
         v_[1] = v1;
@@ -37,16 +37,16 @@ public:
         n_[2] = n2;
     };
 
-    CUDA_DEVICE bool Hit(const Ray& ray, double t_min, double t_max, HitResult& record) const override;
-    CUDA_DEVICE bool BoundingBox(AABB& bounding_box) const override;
+    bool BoundingBox(AABB& bounding_box) const override;
     void Translate(Vector3 offset);
     void Scale(Vector3 scale);
     void Transform(Matrix3 transformation);
 
     friend std::ostream& operator<<(std::ostream& stream, const Triangle& triangle);
+    friend class GPUTriangle;
 
 private:
-    CUDA_DEVICE bool Intersects(const Ray &ray, double &t, double& u, double &v) const;
+    bool Intersects(const Ray &ray, double &t, double& u, double &v) const;
     Vector3 v_[3];
     Vector3 n_[3];
 };

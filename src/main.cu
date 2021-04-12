@@ -43,17 +43,18 @@ int LoadScene(Scene& scene, std::chrono::time_point<std::chrono::steady_clock> t
     std::cout << "Loading the model took " << TimeIt(t1) << " ms" << std::endl;
     if(model == nullptr) return 1;
 
-    model->Scale(Vector3(1));
-    model->Transform(Matrix3::FromEuler({0, 180, 0}));
+    model->Scale(Vector3(0.25));
+    //model->Transform(Matrix3::FromEuler({0, 180, 0}));
     model->Translate(Vector3(0, 0, -0.5));
 
-    std::cout << "Allocating " << model->Size() << " triangles on CUDA memory... " << std::endl;
+    //model->Scale(Vector3(1));
+    //model->Transform(Matrix3::FromEuler({0, 180, 0}));
+    //model->Translate(Vector3(0, 0, -0.5));
 
-    scene.Build(model);
-    std::cout << "Allocating CUDA memory took " << TimeIt(t1) << " ms" << std::endl;
+    scene.Add(model);
+    std::cout << "Making scene took " << TimeIt(t1) << " ms" << std::endl;
 
-    //Bvh bvh(triangles, 0, triangles.size());
-    //scene.push_back(bvh);
+    scene.BuildBvh();
     std::cout << "Building the bvh took " << TimeIt(t1) << " ms" << std::endl;
 
     return 0;
@@ -79,9 +80,6 @@ int main()
    //std::cout << "Triangle intersect calls were " << INTERSECT_CALLS << std::endl;
 
     WriteOutput("./output.tga", camera);
-
-    // ADD AN ALLOCATOR FOR THIS
-    scene.Dispose();
 
     return 0;
 }

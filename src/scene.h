@@ -7,20 +7,26 @@
 
 
 #include "volumes/triangle.h"
-#include "kernel/kernel_vector.h"
+#include "kernel/vector.h"
 #include "kernel/kernel_ptr.h"
 #include "io/triangle_model.h"
+#include "volumes/hit_result.h"
+#include "volumes/aabb.h"
+#include "volumes/bvh.h"
 
 class Scene {
 public:
-    void Build(std::shared_ptr<TriangleModel>);
-    CUDA_DEVICE bool Hit(const Ray& ray, double t_min, double t_max, HitResult& record) const;
-    CUDA_DEVICE bool BoundingBox(AABB& output_box) const;
-    void Dispose() const;
+    Scene() : model_(nullptr) {};
+    void Add(std::shared_ptr<TriangleModel>);
+    void BuildBvh();
+    inline Bvh* GetBvh() const
+    {
+        return bvh_.get();
+    }
 
 private:
-    Volume** volumes_;
-    size_t count_;
+    std::unique_ptr<TriangleModel> model_;
+    std::unique_ptr<Bvh> bvh_;
 };
 
 

@@ -6,7 +6,6 @@
 #define RAYTRACER_TRIANGLE_MODEL_H
 
 
-#include "../volumes/volume.h"
 #include "../volumes/triangle.h"
 #include "../math/matrix3.h"
 
@@ -17,6 +16,8 @@ public:
     void Translate(Vector3 offset);
     void Scale(Vector3 scale);
     void Transform(Matrix3 transformation);
+
+    static std::unique_ptr<TriangleModel> Merge(const TriangleModel*, const TriangleModel*);
 
     [[nodiscard]] inline uint32_t Size() const { return count_; }
 

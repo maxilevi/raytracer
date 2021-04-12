@@ -6,51 +6,6 @@
 #include <limits>
 #include <algorithm>
 
-/*
- * Möller–Trumbore intersection algorithm
- *
- * https://en.wikipedia.org/wiki/M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm
- * */
-CUDA_DEVICE bool Triangle::Intersects(const Ray &ray, double &t, double& u, double &v) const
-{
-    constexpr double epsilon = DOUBLE_EPSILON;
-    auto edge1 = v_[1] - v_[0];
-    auto edge2 = v_[2] - v_[0];
-    auto h = Vector3::Cross(ray.Direction(), edge2);
-    auto a = Vector3::Dot(edge1, h);
-    if (a > -epsilon && a < epsilon)
-        return false;
-    double f = 1.0 / a;
-    auto s = ray.Origin() - v_[0];
-    u = f * Vector3::Dot(s, h);
-    if (u < 0.0 || u > 1.0)
-        return false;
-
-    auto q = Vector3::Cross(s, edge1);
-    v = f * Vector3::Dot(ray.Direction(), q);
-    if (v < 0.0 || u + v > 1.0)
-        return false;
-
-    double temp = f * Vector3::Dot(q, edge2);
-    if (temp > epsilon)
-    {
-        t = temp;
-        return true;
-    }
-    return false;
-}
-
-CUDA_DEVICE bool Triangle::Hit(const Ray &ray, double t_min, double t_max, HitResult &record) const
-{
-    double t, u, v;
-    if (!Intersects(ray, t, u, v)) return false;
-    if (t >= t_max || t <= t_min) return false;
-    record.t = t;
-    record.Point = ray.Point(record.t);
-    record.Normal = u * n_[0] + v * n_[1] + (1 - u - v) * n_[2];
-    return true;
-}
-
 std::ostream& operator<<(std::ostream& stream, const Triangle& triangle)
 {
     stream << "(" << triangle.v_[0] << ", " << triangle.v_[1] << ", "  << triangle.v_[2] << ", ";
@@ -70,15 +25,15 @@ void Triangle::Scale(Vector3 scale)
         i *= scale;
 }
 
-CUDA_DEVICE bool Triangle::BoundingBox(AABB &bounding_box) const
+bool Triangle::BoundingBox(AABB &bounding_box) const
 {
-    Vector3 min(MAX_DOUBLE), max(MIN_DOUBLE);
+    Vector3 min(std::numeric_limits<double>::max()), max(std::numeric_limits<double>::min());
     for(auto& v : v_)
     {
         for(int i = 0; i < 3; ++i)
         {
-            min[i] = MIN(v[i], min[i]);
-            max[i] = MAX(v[i], max[i]);
+            min[i] = std::min(v[i], min[i]);
+            max[i] = std::max(v[i], max[i]);
         }
     }
     bounding_box = AABB(min, max);
