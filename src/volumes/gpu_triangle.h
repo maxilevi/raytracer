@@ -26,6 +26,7 @@ private:
     Vector3 n_[3];
 
     CUDA_DEVICE bool Intersects(const Ray &ray, double &t, double& u, double &v) const;
+    CUDA_DEVICE bool Intersects2(const Ray &ray, double &t, double& u, double &v) const;
 };
 
 

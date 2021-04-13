@@ -9,8 +9,10 @@
 #include "volumes/bvh.h"
 #include "kernel/random.h"
 #include "volumes/gpu_bvh.h"
+#include <chrono>
+#include "helper.h"
 
-#define THREAD_COUNT 256
+#define THREAD_COUNT 512
 
 CUDA_DEVICE Vector3 RandomPointOnUnitSphere(uint32_t& seed)
 {
@@ -71,7 +73,7 @@ void GPUTrace(Scene& scene, const std::vector<std::pair<int, int>>& params, Vect
     Vector3 step_y(0, 2, 0);
 
     int n = params.size();
-    int step = n / 2;
+    int step = n / ((int)ceil(n / (float)33177600));
 
     std::cout << "Total samples to process = " << n << std::endl;
 
@@ -88,8 +90,10 @@ void GPUTrace(Scene& scene, const std::vector<std::pair<int, int>>& params, Vect
 
     std::cout << "Starting CUDA work" << std::endl;
 
+
     for(size_t w = 0; w < n; w += step)
     {
+        auto t1 = std::chrono::high_resolution_clock::now();
         std::cout << "Processing elements (" << w << ", " << w + step << ")" << std::endl;
         int size = MIN(step, params.size() - w);
         int blocks = (size + THREAD_COUNT - 1) / THREAD_COUNT;
@@ -97,12 +101,14 @@ void GPUTrace(Scene& scene, const std::vector<std::pair<int, int>>& params, Vect
 
         CUDA_CALL(cudaMemcpy(device_params, &params[0] + w, size * 2 * sizeof(int), cudaMemcpyHostToDevice));
 
+        std::cout << "Processing elements took "<< TimeIt(t1) << " ms" << std::endl;
+
         ColorKernel<<<blocks, THREAD_COUNT>>>(gpu_bvh, out_colors, device_params, size, width, height, origin, screen, step_x, step_y);
 
         CUDA_CALL(cudaPeekAtLastError())
         CUDA_CALL(cudaDeviceSynchronize());
 
-        std::cout << "All CUDA threads joined." << std::endl;
+        std::cout << "All CUDA threads joined, took" << TimeIt(t1) << " ms" << std::endl;
 
         std::cout << "Copying CUDA results." << std::endl;
 

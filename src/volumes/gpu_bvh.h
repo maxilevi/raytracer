@@ -16,8 +16,9 @@
 class GPUBvhNode {
 public:
     GPUBvhNode() = default;
-    GPUBvhNode(Bvh* bvh, int left, int right, bool nodes_are_triangles)
+    GPUBvhNode(int index, Bvh* bvh, int left, int right, bool nodes_are_triangles)
     {
+        index_ = index;
         box_ = bvh->box_;
         left_child = left;
         right_child = right;
@@ -25,11 +26,12 @@ public:
     }
 
     AABB box_;
+    int index_;
     int left_child;
     int right_child;
     bool has_triangle_nodes;
 
-    CUDA_DEVICE bool Hit(const Ray &ray, double t_min, double t_max, HitResult &record) const;
+    CUDA_DEVICE bool Hit(const Ray &ray, double t_min, double t_max) const;
 };
 
 class GPUBvh {

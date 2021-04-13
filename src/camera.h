@@ -12,7 +12,7 @@
 
 class Camera {
 public:
-    const int kAntialiasingSamples = 64;
+    const int kAntialiasingSamples = 32;
     const double kGamma = 1.5;
     static const int kMaxLightBounces = 8;
 

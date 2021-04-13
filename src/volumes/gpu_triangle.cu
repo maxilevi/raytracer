@@ -38,6 +38,47 @@ CUDA_DEVICE bool GPUTriangle::Intersects(const Ray &ray, double &t, double& u, d
     return false;
 }
 
+CUDA_DEVICE bool GPUTriangle::Intersects2(const Ray &ray, double &t, double& tu, double &tv) const
+{
+    Vector3 u, v, n;
+    Vector3 w0, w;
+    double a, b;
+
+    u = v_[1] - v_[0];
+    v = v_[2] - v_[0];
+
+    w0 = ray.Origin() - v_[0];
+    a = -Vector3::Dot(n, w0);
+    b = Vector3::Dot(n, ray.Direction());
+
+    if (b > -DOUBLE_EPSILON && b < DOUBLE_EPSILON)
+        return false;
+
+    t = a / b;
+    if (t < 0.0)
+        return false;
+
+    Vector3 i = ray.Point(t);
+
+    double uu, uv, vv, wu, wv, D;
+    uu = Vector3::Dot(u,u);
+    uv = Vector3::Dot(u,v);
+    vv = Vector3::Dot(v,v);
+    w = i - v_[0];
+    wu = Vector3::Dot(w,u);
+    wv = Vector3::Dot(w,v);
+    D = uv * uv - uu * vv;
+
+    tu = (uv * wv - vv * wu) / D;
+    if (tu < 0.0 || tu > 1.0)
+        return 0;
+    tv = (uv * wu - uu * wv) / D;
+    if (tv < 0.0 || (tu + tv) > 1.0)
+        return false;
+
+    return true;
+}
+
 CUDA_DEVICE bool GPUTriangle::Hit(const Ray &ray, double t_min, double t_max, HitResult &record) const
 {
     double t, u, v;

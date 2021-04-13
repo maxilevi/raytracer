@@ -5,21 +5,41 @@
 #include "gpu_bvh.h"
 #include "../kernel/vector.h"
 
+
 CUDA_DEVICE bool GPUBvh::Hit(const Ray &ray, double t_min, double t_max, HitResult &record) const
 {
-/*
-    for(int i = 0; i < this->triangle_count; ++i)
-        if (this->gpu_triangles[i].Hit(ray, t_min, t_max, record))
-            return true;
-    return false;
-*/
-    vector<GPUBvhNode> stack;
-    stack.push_back(this->bvh_nodes[this->starting_node]);
-
-    while(!stack.empty())
+    /*
+    HitResult temp;
+    bool any_hit = false;
+    double closest_so_far = t_max;
+    for (size_t i = 0; i < this->triangle_count; ++i)
     {
-        GPUBvhNode node = stack.pop();
-        if (!node.Hit(ray, t_min, t_max, record))
+        if(this->gpu_triangles[i].Hit(ray, t_min, closest_so_far, temp))
+        {
+            any_hit = true;
+            closest_so_far = temp.t;
+            record = temp;
+        }
+    }
+    return any_hit;*/
+
+    /*
+     * I chose to use a fixed size stack in order to have a "queue" like behaviour and to avoid unnecessary allocations which slow down the kernel.
+     * A queue would have made more sense but a stack was easier to implement
+     * */
+    const int MAX_STACK_SIZE = 24;
+    GPUBvhNode stack[MAX_STACK_SIZE];
+    size_t count = 0;
+
+    /* Add starting element */
+    stack[count++] = this->bvh_nodes[this->starting_node];
+    double closest_so_far = t_max;
+    bool any_hit = false;
+    while(count > 0)
+    {
+        GPUBvhNode node = stack[--count];
+
+        if (!node.Hit(ray, t_min, closest_so_far))
             continue;
 
         if (node.has_triangle_nodes)
@@ -27,20 +47,27 @@ CUDA_DEVICE bool GPUBvh::Hit(const Ray &ray, double t_min, double t_max, HitResu
             GPUTriangle left = this->gpu_triangles[node.left_child];
             GPUTriangle right = this->gpu_triangles[node.right_child];
 
-            return left.Hit(ray, t_min, t_max, record) || right.Hit(ray, t_min, t_max, record);
+            bool left_hit = left.Hit(ray, t_min, closest_so_far, record);
+            closest_so_far = left_hit ? record.t : closest_so_far;
+            bool right_hit = right.Hit(ray, t_min, closest_so_far, record);
+            if (left_hit || right_hit)
+            {
+                any_hit = true;
+                closest_so_far = right_hit ? record.t : closest_so_far;
+            }
         }
         else {
             GPUBvhNode left = this->bvh_nodes[node.left_child];
             GPUBvhNode right = this->bvh_nodes[node.right_child];
 
-            stack.push_back(right);
-            stack.push_back(left);
+            stack[count++] = right;
+            stack[count++] = left;
         }
     }
-    return false;
+    return any_hit;
 }
 
-CUDA_DEVICE bool GPUBvhNode::Hit(const Ray &ray, double t_min, double t_max, HitResult &record) const
+CUDA_DEVICE bool GPUBvhNode::Hit(const Ray &ray, double t_min, double t_max) const
 {
     return this->box_.Hit(ray, t_min, t_max);
 }
@@ -55,7 +82,7 @@ int GPUBvh::BvhDfs(std::vector<GPUBvhNode>& nodes, std::vector<GPUTriangle>& tri
         auto* tri = (Triangle*)left_child;
         tris.emplace_back(tri);
 
-        nodes.emplace_back(cpu_bvh, tris.size()-1, tris.size()-1, true);
+        nodes.emplace_back(nodes.size(), cpu_bvh, (int)(tris.size()-1), (int)(tris.size()-1), true);
     }
     else if (objects_left == 2)
     {
@@ -65,13 +92,13 @@ int GPUBvh::BvhDfs(std::vector<GPUBvhNode>& nodes, std::vector<GPUTriangle>& tri
         tris.emplace_back(tri1);
         tris.emplace_back(tri2);
 
-        nodes.emplace_back(cpu_bvh, tris.size()-2, tris.size()-1, true);
+        nodes.emplace_back(nodes.size(), cpu_bvh, (int)(tris.size()-2), (int)(tris.size()-1), true);
     }
     else {
         auto left_idx = BvhDfs(nodes, tris, (Bvh *) left_child);
         auto right_idx = BvhDfs(nodes, tris, (Bvh *) right_child);
 
-        nodes.emplace_back(cpu_bvh, left_idx, right_idx, false);
+        nodes.emplace_back(nodes.size(), cpu_bvh, left_idx, right_idx, false);
     }
 
     return nodes.size()-1;

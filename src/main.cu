@@ -7,6 +7,7 @@
 #include <chrono>
 #include <string>
 #include <cstdint>
+#include "helper.h"
 
 void WriteOutput(const std::string& path, const Camera& camera)
 {
@@ -27,28 +28,20 @@ void WriteOutput(const std::string& path, const Camera& camera)
     TGAWrite(path, camera.Width(), camera.Height(), bgr_frame.get(), channels);
 }
 
-auto TimeIt(std::chrono::time_point<std::chrono::steady_clock>& prev_time)
-{
-    auto t2 = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>( t2 - prev_time ).count();
-    prev_time = t2;
-    return duration;
-}
-
 int LoadScene(Scene& scene, std::chrono::time_point<std::chrono::steady_clock> t1)
 {
-    std::shared_ptr<TriangleModel> model = LoadPLY("./../models/icosphere.ply");
+    std::shared_ptr<TriangleModel> model = LoadPLY("./../models/test.ply");
 
     std::cout << "Loaded " << model->Size() << " triangles" << std::endl;
     std::cout << "Loading the model took " << TimeIt(t1) << " ms" << std::endl;
     if(model == nullptr) return 1;
 
-    model->Scale(Vector3(0.25));
-    //model->Transform(Matrix3::FromEuler({0, 180, 0}));
+    model->Scale(Vector3(1));
+    model->Transform(Matrix3::FromEuler({0, 90, 0}));
     model->Translate(Vector3(0, 0, -0.5));
 
     //model->Scale(Vector3(1));
-    //model->Transform(Matrix3::FromEuler({0, 180, 0}));
+    //model->Transform(Matrix3::FromEuler({4, 15, 0}));
     //model->Translate(Vector3(0, 0, -0.5));
 
     scene.Add(model);
@@ -71,11 +64,11 @@ int main()
         return r;
 
     /* Camera */
-    Camera camera(1920 / 4, 1080 / 4);
+    Camera camera(1920, 1080);
 
     camera.Draw(scene);
 
-    std::cout << "Drawing took " << TimeIt(t1) << " ms" << std::endl;
+    std::cout << "Drawing took " << TimeIt(t1) / 1000 << " s" << std::endl;
 
    //std::cout << "Triangle intersect calls were " << INTERSECT_CALLS << std::endl;
 
