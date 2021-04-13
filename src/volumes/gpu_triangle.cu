@@ -82,7 +82,7 @@ CUDA_DEVICE bool GPUTriangle::Intersects2(const Ray &ray, double &t, double& tu,
 CUDA_DEVICE bool GPUTriangle::Hit(const Ray &ray, double t_min, double t_max, HitResult &record) const
 {
     double t, u, v;
-    if (!Intersects(ray, t, u, v)) return false;
+    if (!Intersects2(ray, t, u, v)) return false;
     if (t >= t_max || t <= t_min) return false;
     record.t = t;
     record.Point = ray.Point(record.t);

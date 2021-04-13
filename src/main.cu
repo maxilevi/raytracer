@@ -30,19 +30,19 @@ void WriteOutput(const std::string& path, const Camera& camera)
 
 int LoadScene(Scene& scene, std::chrono::time_point<std::chrono::steady_clock> t1)
 {
-    std::shared_ptr<TriangleModel> model = LoadPLY("./../models/test.ply");
+    std::shared_ptr<TriangleModel> model = LoadPLY("./../models/aurelius-verlow.ply");
 
     std::cout << "Loaded " << model->Size() << " triangles" << std::endl;
     std::cout << "Loading the model took " << TimeIt(t1) << " ms" << std::endl;
     if(model == nullptr) return 1;
 
-    model->Scale(Vector3(1));
-    model->Transform(Matrix3::FromEuler({0, 90, 0}));
-    model->Translate(Vector3(0, 0, -0.5));
+   // model->Scale(Vector3(1));
+   // model->Transform(Matrix3::FromEuler({0, 90, 0}));
+   // model->Translate(Vector3(0, 0, -0.5));
 
-    //model->Scale(Vector3(1));
-    //model->Transform(Matrix3::FromEuler({4, 15, 0}));
-    //model->Translate(Vector3(0, 0, -0.5));
+    model->Scale(Vector3(1));
+    model->Transform(Matrix3::FromEuler({0, 15, 0}));
+    model->Translate(Vector3(0, 0, -0.5));
 
     scene.Add(model);
     std::cout << "Making scene took " << TimeIt(t1) << " ms" << std::endl;
