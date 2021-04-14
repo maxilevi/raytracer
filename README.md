@@ -56,6 +56,8 @@ in order to model diffuse lighting we simulate the way light rays works. wheneve
 
 it tries to follow [Google's C++ style guide](https://google.github.io/styleguide/cppguide.html)
 
-## model credits
+# credits
 
-["The Jennings Dog"](https://skfb.ly/OrYs) by The British Museum is licensed under [CC Attribution-NonCommercial-ShareAlike](http://creativecommons.org/licenses/by-nc-sa/4.0/).
+* The triangle intersection algorithm used is from this paper [Fast Minimum Storage Ray/Triangle
+Intersection](https://cadxfem.org/inf/Fast%20MinimumStorage%20RayTriangle%20Intersection.pdf)
+* ["The Jennings Dog"](https://skfb.ly/OrYs) by The British Museum is licensed under [CC Attribution-NonCommercial-ShareAlike](http://creativecommons.org/licenses/by-nc-sa/4.0/).
