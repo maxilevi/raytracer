@@ -82,7 +82,7 @@ int GPUBvh::BvhDfs(std::vector<GPUBvhNode>& nodes, std::vector<GPUTriangle>& tri
         auto* tri = (Triangle*)left_child;
         tris.emplace_back(tri);
 
-        nodes.emplace_back(nodes.size(), cpu_bvh, (int)(tris.size()-1), (int)(tris.size()-1), true);
+        nodes.emplace_back((int)nodes.size(), cpu_bvh, (int)(tris.size()-1), (int)(tris.size()-1), true);
     }
     else if (objects_left == 2)
     {
@@ -92,13 +92,13 @@ int GPUBvh::BvhDfs(std::vector<GPUBvhNode>& nodes, std::vector<GPUTriangle>& tri
         tris.emplace_back(tri1);
         tris.emplace_back(tri2);
 
-        nodes.emplace_back(nodes.size(), cpu_bvh, (int)(tris.size()-2), (int)(tris.size()-1), true);
+        nodes.emplace_back((int)nodes.size(), cpu_bvh, (int)(tris.size()-2), (int)(tris.size()-1), true);
     }
     else {
         auto left_idx = BvhDfs(nodes, tris, (Bvh *) left_child);
         auto right_idx = BvhDfs(nodes, tris, (Bvh *) right_child);
 
-        nodes.emplace_back(nodes.size(), cpu_bvh, left_idx, right_idx, false);
+        nodes.emplace_back((int)nodes.size(), cpu_bvh, left_idx, right_idx, false);
     }
 
     return nodes.size()-1;

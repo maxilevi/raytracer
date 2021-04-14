@@ -16,7 +16,7 @@ public:
     inline const Vector3& Min() const { return min_; }
     inline const Vector3& Max() const { return max_; }
 
-    CUDA_DEVICE inline bool Hit(const Ray& ray, double t_min, double t_max) const
+    CUDA_HOST_DEVICE inline bool Hit(const Ray& ray, double t_min, double t_max) const
     {
         for(int i = 0; i < 3; ++i)
         {

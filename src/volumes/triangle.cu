@@ -3,6 +3,7 @@
  */
 
 #include "triangle.h"
+#include "triangle_methods.h"
 #include <limits>
 #include <algorithm>
 
@@ -48,4 +49,9 @@ void Triangle::Transform(Matrix3 transformation)
     auto normal_mat = transformation.Transposed();
     for(auto & v : n_)
         v = normal_mat * v;
+}
+
+bool Triangle::Hit(const Ray &ray, double t_min, double t_max, HitResult &record) const
+{
+    return TriangleMethods::Hit(ray, v_, n_, e_, t_min, t_max, record);
 }

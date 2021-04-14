@@ -3,8 +3,6 @@
  */
 
 #include "scene.h"
-#include "volumes/triangle.h"
-#include "gpu_tracer.h"
 
 void Scene::Add(std::shared_ptr<TriangleModel> model)
 {
@@ -23,4 +21,5 @@ void Scene::BuildBvh()
     }
 
     this->bvh_ = std::unique_ptr<Bvh>(new Bvh(triangles, 0, model_->Size()));
+    this->bvh_->volumes_ = triangles;
 }

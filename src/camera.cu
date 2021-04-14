@@ -3,11 +3,10 @@
  */
 #include "kernel/helper.h"
 #include "camera.h"
-#include "gpu_tracer.h"
 
 void Camera::ProcessRays(Scene& scene, const std::vector<std::pair<int, int>>& params)
 {
-    GPUTrace(scene, params, colors_.get(), width_, height_);
+    this->backend_->Trace(scene, params, colors_.get(), width_, height_);
 }
 
 void Camera::NormalizeFrame()
@@ -19,7 +18,6 @@ void Camera::NormalizeFrame()
             auto color = this->colors_[j * width_ + i];
 
             /* Normalize the samples for antialiasing */
-            //std::cout << color << std::endl;
             color /= Camera::kAntialiasingSamples;
 
             /* Gamma correction */

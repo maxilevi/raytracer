@@ -18,15 +18,15 @@ public:
             v_[i] = triangle->v_[i];
             n_[i] = triangle->n_[i];
         }
+        e_[0] = v_[1] - v_[0];
+        e_[1] = v_[2] - v_[0];
     }
     CUDA_DEVICE bool Hit(const Ray &ray, double t_min, double t_max, HitResult &record) const;
 
 private:
     Vector3 v_[3];
     Vector3 n_[3];
-
-    CUDA_DEVICE bool Intersects(const Ray &ray, double &t, double& u, double &v) const;
-    CUDA_DEVICE bool Intersects2(const Ray &ray, double &t, double& u, double &v) const;
+    Vector3 e_[2];
 };
 
 
