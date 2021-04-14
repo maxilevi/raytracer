@@ -1,12 +1,16 @@
 # raytracer
 
-wip raytracer written from scratch in C++. the program processes a defined scene then rasterizes it and outputs a `.tga` file. raycasts are parallelized using CUDA.
+wip raytracer written from scratch in C++. the program processes a defined scene then rasterizes it and outputs a `.tga` file. the program support both doing the calculations on the CPU using C++ 11 threads or offloading the calculations to the GPU using CUDA.
 
 # eye-candy
 
 ![](screenshots/statue.png)
 
 ![](screenshots/diffuse_big.png)
+
+# benchmarks
+
+coming soon
 
 # how it works
 
@@ -17,6 +21,10 @@ a `Scene` object contains a collection of volumes.
 a `Camera` can draw a given scene. when drawing, the camera casts rays to the screen in order to rasterize the volumes in the scene. after each ray the result is save into a pixel of a `Vector3` buffer of size `width` x `height`. This buffer is then dumped into a `.tga` file so it can be visualized.
 
 current supported volumes are `Triangle`s (i know its not technicaly a volume) and `Sphere`s. `Triangle` support allows us to load custom models.
+
+## backends
+
+the project currently has 2 available backends to use for computation, these are `--backend=gpu` and `--backend=cpu`. when the backend is `gpu`, computations are offloaded to the GPU using CUDA, otherwise they are done by the CPU in different threads.
 
 ## models
 
