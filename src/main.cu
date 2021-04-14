@@ -57,26 +57,27 @@ std::unique_ptr<RenderingBackend> GetBackend(int argc, char** argv)
 
 int LoadScene(Scene& scene, std::chrono::time_point<std::chrono::steady_clock> t1)
 {
-        std::shared_ptr<TriangleModel> model = LoadPLY("./../models/torus.ply");
+    std::shared_ptr<TriangleModel> model = LoadPLY("./../models/aurelius-verylow.ply");
 
     std::cout << "Loaded " << model->Size() << " triangles" << std::endl;
     std::cout << "Loading the model took " << TimeIt(t1) << " ms" << std::endl;
     if(model == nullptr) return 1;
 
     // Icosphere
+    /*
     model->Scale(Vector3(0.25));
     model->Transform(Matrix3::FromEuler({0, 90, 0}));
     model->Translate(Vector3(0, 0, -0.5));
-
+*/
     // Torus
-    //model->Scale(Vector3(1));
-    //model->Transform(Matrix3::FromEuler({0, 90, 0}));
-    //model->Translate(Vector3(0, 0, -0.5));
-
+    /*model->Scale(Vector3(1));
+    model->Transform(Matrix3::FromEuler({0, 90, 0}));
+    model->Translate(Vector3(0, 0, -0.5));
+*/
     // Statue
-    //model->Scale(Vector3(1));
-    //model->Transform(Matrix3::FromEuler({0, 0, 0}));
-    //model->Translate(Vector3(0, 0, -0.5));
+    model->Scale(Vector3(1));
+    model->Transform(Matrix3::FromEuler({0, 0, 0}));
+    model->Translate(Vector3(0, 0, -0.5));
 
     scene.Add(model);
     std::cout << "Making scene took " << TimeIt(t1) << " ms" << std::endl;

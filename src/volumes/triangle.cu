@@ -18,12 +18,14 @@ void Triangle::Translate(Vector3 offset)
 {
     for(auto & i : v_)
         i += offset;
+    UpdateEdges();
 }
 
 void Triangle::Scale(Vector3 scale)
 {
     for(auto & i : v_)
         i *= scale;
+    UpdateEdges();
 }
 
 bool Triangle::BoundingBox(AABB &bounding_box) const
@@ -49,9 +51,17 @@ void Triangle::Transform(Matrix3 transformation)
     auto normal_mat = transformation.Transposed();
     for(auto & v : n_)
         v = normal_mat * v;
+
+    UpdateEdges();
 }
 
 bool Triangle::Hit(const Ray &ray, double t_min, double t_max, HitResult &record) const
 {
     return TriangleMethods::Hit(ray, v_, n_, e_, t_min, t_max, record);
+}
+
+void Triangle::UpdateEdges()
+{
+    e_[0] = v_[1] - v_[0];
+    e_[1] = v_[2] - v_[0];
 }

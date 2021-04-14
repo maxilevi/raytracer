@@ -25,8 +25,7 @@ public:
         n_[1] = normal;
         n_[2] = normal;
 
-        e_[0] = v_[1] - v_[0];
-        e_[1] = v_[2] - v_[0];
+        UpdateEdges();
     };
 
     Triangle(Vector3 v0, Vector3 v1, Vector3 v2, Vector3 n0, Vector3 n1, Vector3 n2)
@@ -39,8 +38,7 @@ public:
         n_[1] = n1;
         n_[2] = n2;
 
-        e_[0] = v_[1] - v_[0];
-        e_[1] = v_[2] - v_[0];
+        UpdateEdges();
     };
     bool Hit(const Ray& ray, double t_min, double t_max, HitResult& record) const override;
     bool BoundingBox(AABB& bounding_box) const override;
@@ -55,6 +53,8 @@ private:
     Vector3 v_[3];
     Vector3 n_[3];
     Vector3 e_[2];
+
+    void UpdateEdges();
 };
 
 

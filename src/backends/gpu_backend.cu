@@ -13,7 +13,7 @@
 
 #define THREAD_COUNT 512
 
-CUDA_DEVICE Vector3 Color(const GPUBvhNode& bvh, const Ray& ray, uint32_t& seed)
+CUDA_DEVICE Vector3 Color(const GPUBvh& bvh, const Ray& ray, uint32_t& seed)
 {
     Ray current_ray = ray;
     HitResult result;
@@ -44,7 +44,7 @@ void ColorKernel(GPUBvh bvh, Vector3* out_colors, const int* device_params, int 
     double v = (j + noise) / double(height);
 
     Ray r(origin, screen + step_x * u + step_y * v);
-    out_colors[idx] = RenderingBackend::Color<GPUBvh>(&bvh, r, seed);
+    out_colors[idx] = Color(bvh, r, seed);
 }
 
 void GPUBackend::Trace(Scene &scene, const std::vector<std::pair<int, int>>& params, Vector3 *colors, int width, int height)

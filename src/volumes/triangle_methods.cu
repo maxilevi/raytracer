@@ -13,6 +13,11 @@
 CUDA_HOST_DEVICE bool TriangleMethods::Intersects(const Ray &ray, const Vector3* vertices, const Vector3* normals, const Vector3* edges, double &t, double& u, double &v)
 {
 #if CULL_BACKFACE
+    const double epsilon = DOUBLE_EPSILON;
+    auto edge1 = vertices[1] - vertices[0];
+    auto edge2 = vertices[2] - vertices[0];
+    auto h = Vector3::Cross(ray.Direction(), edge2);
+    auto det = Vector3::Dot(edge1, h);
     if (det < epsilon)
         return false;
 
@@ -36,11 +41,9 @@ CUDA_HOST_DEVICE bool TriangleMethods::Intersects(const Ray &ray, const Vector3*
     return true;
 #else
     const double epsilon = DOUBLE_EPSILON;
-    auto edge1 = vertices[1] - vertices[0];
-    auto edge2 = vertices[2] - vertices[0];
-    auto h = Vector3::Cross(ray.Direction(), edge2);
-    auto a = Vector3::Dot(edge1, h);
-    if (a > -epsilon && a < epsilon)
+    auto h = Vector3::Cross(ray.Direction(), edges[1]);
+    auto a = Vector3::Dot(edges[0], h);
+    if (/*a > -epsilon &&*/ a < epsilon)
         return false;
     double f = 1.0 / a;
     auto s = ray.Origin() - vertices[0];
@@ -48,12 +51,12 @@ CUDA_HOST_DEVICE bool TriangleMethods::Intersects(const Ray &ray, const Vector3*
     if (u < 0.0 || u > 1.0)
         return false;
 
-    auto q = Vector3::Cross(s, edge1);
+    auto q = Vector3::Cross(s, edges[0]);
     v = f * Vector3::Dot(ray.Direction(), q);
     if (v < 0.0 || u + v > 1.0)
         return false;
 
-    double temp = f * Vector3::Dot(q, edge2);
+    double temp = f * Vector3::Dot(q, edges[1]);
     if (temp > epsilon)
     {
         t = temp;
@@ -97,6 +100,6 @@ CUDA_HOST_DEVICE bool TriangleMethods::Hit(const Ray &ray, const Vector3* vertic
     record.t = t;
     record.Point = ray.Point(record.t);
     // TODO: Interpolate normals with barycentric coordinates
-    record.Normal = u * normals[0] + v * normals[1] + (1 - u - v) * normals[2];
+    record.Normal = normals[0];//u * normals[0] + v * normals[1] + (1 - u - v) * normals[2];
     return true;
 }
