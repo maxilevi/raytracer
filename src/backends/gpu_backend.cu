@@ -11,7 +11,7 @@
 #include <chrono>
 #include "../helper.h"
 
-#define THREAD_COUNT 512
+#define THREAD_COUNT 256
 
 CUDA_DEVICE Vector3 Color(const GPUBvh& bvh, const Ray& ray, uint32_t& seed)
 {

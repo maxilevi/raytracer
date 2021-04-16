@@ -5,7 +5,7 @@
 #ifndef RAYTRACER_RENDERING_BACKEND_H
 #define RAYTRACER_RENDERING_BACKEND_H
 #include "../kernel/helper.h"
-#include "../scene.h"
+#include "../scenes/scene.h"
 #include <vector>
 
 class RenderingBackend {
