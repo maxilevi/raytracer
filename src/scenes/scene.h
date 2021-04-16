@@ -6,13 +6,13 @@
 #define RAYTRACER_SCENE_H
 
 
-#include "volumes/triangle.h"
-#include "kernel/vector.h"
-#include "kernel/kernel_ptr.h"
-#include "io/triangle_model.h"
-#include "volumes/hit_result.h"
-#include "volumes/aabb.h"
-#include "volumes/bvh.h"
+#include "../volumes/triangle.h"
+#include "../kernel/vector.h"
+#include "../kernel/kernel_ptr.h"
+#include "../io/triangle_model.h"
+#include "../volumes/hit_result.h"
+#include "../volumes/aabb.h"
+#include "../volumes/bvh.h"
 
 class Scene {
 public:

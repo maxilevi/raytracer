@@ -43,7 +43,7 @@ CUDA_HOST_DEVICE bool TriangleMethods::Intersects(const Ray &ray, const Vector3*
     const double epsilon = DOUBLE_EPSILON;
     auto h = Vector3::Cross(ray.Direction(), edges[1]);
     auto a = Vector3::Dot(edges[0], h);
-    if (/*a > -epsilon &&*/ a < epsilon)
+    if (a > -epsilon && a < epsilon)
         return false;
     double f = 1.0 / a;
     auto s = ray.Origin() - vertices[0];
@@ -79,10 +79,10 @@ CUDA_HOST_DEVICE bool TriangleMethods::Intersects2(const Ray &ray, const Vector3
 
     t = -(Vector3::Dot(ray.Origin(), normal) + d) / Vector3::Dot(ray.Direction(), normal);
     Vector3 p = ray.Point(t);
-    //for(int i = 0; i < 3; ++i)
+    for(int i = 0; i < 3; ++i)
     {
-        auto v1 = vertices[0] - p;
-        auto v2 = vertices[1] - p;
+        auto v1 = vertices[(0 + i) % 3] - p;
+        auto v2 = vertices[(1 + i) % 3] - p;
         auto n1 = Vector3::Cross(v1, v2);
         auto d1 = -Vector3::Dot(ray.Origin(), n1);
         if (Vector3::Dot(p, n1) + d1 < 0)
@@ -100,6 +100,6 @@ CUDA_HOST_DEVICE bool TriangleMethods::Hit(const Ray &ray, const Vector3* vertic
     record.t = t;
     record.Point = ray.Point(record.t);
     // TODO: Interpolate normals with barycentric coordinates
-    record.Normal = normals[0];//u * normals[0] + v * normals[1] + (1 - u - v) * normals[2];
+    record.Normal = u * normals[0] + v * normals[1] + (1 - u - v) * normals[2];
     return true;
 }
