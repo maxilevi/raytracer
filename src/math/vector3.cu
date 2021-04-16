@@ -10,26 +10,26 @@ const Vector3 Vector3::UnitZ = Vector3(0, 0, 1);
 const Vector3 Vector3::Zero = Vector3(0, 0, 0);
 const Vector3 Vector3::One = Vector3(1, 1, 1);
 
-CUDA_DEVICE Vector3 Vector3::Normalized()
+CUDA_HOST_DEVICE Vector3 Vector3::Normalized()
 {
     Vector3 tmp(*this);
     tmp.Normalize();
     return tmp;
 }
 
-CUDA_DEVICE void Vector3::Normalize()
+CUDA_HOST_DEVICE void Vector3::Normalize()
 {
     auto length = this->Length();
     if (length > 0.0001)
         *this /= length;
 }
 
-CUDA_DEVICE double Vector3::Dot(const Vector3 &a, const Vector3 &b)
+CUDA_HOST_DEVICE double Vector3::Dot(const Vector3 &a, const Vector3 &b)
 {
     return a.v_[0] * b.v_[0] + a.v_[1] * b.v_[1] + a.v_[2] * b.v_[2];
 }
 
-CUDA_DEVICE Vector3 Vector3::Cross(const Vector3 &a, const Vector3 &b)
+CUDA_HOST_DEVICE Vector3 Vector3::Cross(const Vector3 &a, const Vector3 &b)
 {
     return {
         a.v_[1] * b.v_[2] - a.v_[2] * b.v_[1],
@@ -38,7 +38,7 @@ CUDA_DEVICE Vector3 Vector3::Cross(const Vector3 &a, const Vector3 &b)
     };
 }
 
-CUDA_DEVICE Vector3& Vector3::operator +=(const Vector3& vector)
+CUDA_HOST_DEVICE Vector3& Vector3::operator +=(const Vector3& vector)
 {
     this->v_[0] += vector.v_[0];
     this->v_[1] += vector.v_[1];
@@ -46,7 +46,7 @@ CUDA_DEVICE Vector3& Vector3::operator +=(const Vector3& vector)
     return *this;
 }
 
-CUDA_DEVICE Vector3& Vector3::operator -=(const Vector3& vector)
+CUDA_HOST_DEVICE Vector3& Vector3::operator -=(const Vector3& vector)
 {
     this->v_[0] -= vector.v_[0];
     this->v_[1] -= vector.v_[1];
@@ -54,7 +54,7 @@ CUDA_DEVICE Vector3& Vector3::operator -=(const Vector3& vector)
     return *this;
 }
 
-CUDA_DEVICE Vector3& Vector3::operator *=(const Vector3& vector)
+CUDA_HOST_DEVICE Vector3& Vector3::operator *=(const Vector3& vector)
 {
     this->v_[0] *= vector.v_[0];
     this->v_[1] *= vector.v_[1];
@@ -62,7 +62,7 @@ CUDA_DEVICE Vector3& Vector3::operator *=(const Vector3& vector)
     return *this;
 }
 
-CUDA_DEVICE Vector3& Vector3::operator *=(const double& scalar)
+CUDA_HOST_DEVICE Vector3& Vector3::operator *=(const double& scalar)
 {
     this->v_[0] *= scalar;
     this->v_[1] *= scalar;
@@ -70,7 +70,7 @@ CUDA_DEVICE Vector3& Vector3::operator *=(const double& scalar)
     return *this;
 }
 
-CUDA_DEVICE Vector3& Vector3::operator /=(const Vector3& vector)
+CUDA_HOST_DEVICE Vector3& Vector3::operator /=(const Vector3& vector)
 {
     this->v_[0] /= vector.v_[0];
     this->v_[1] /= vector.v_[1];
@@ -78,7 +78,7 @@ CUDA_DEVICE Vector3& Vector3::operator /=(const Vector3& vector)
     return *this;
 }
 
-CUDA_DEVICE Vector3& Vector3::operator /=(const double& Scalar)
+CUDA_HOST_DEVICE Vector3& Vector3::operator /=(const double& Scalar)
 {
     this->v_[0] /= Scalar;
     this->v_[1] /= Scalar;
