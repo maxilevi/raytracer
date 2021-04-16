@@ -50,7 +50,7 @@ typedef struct
 
 typedef struct
 {
-    /* UberMaterial name */
+    /* Material name */
     char*                       name;
 
     /* Parameters */

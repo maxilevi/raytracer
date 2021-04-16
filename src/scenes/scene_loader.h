@@ -15,11 +15,11 @@ public:
 
     static std::pair<std::unique_ptr<Triangle[]>, size_t> LoadOBJ(fastObjMesh* mesh)
     {
-        std::vector<std::shared_ptr<UberMaterial>> materials;
+        std::vector<std::shared_ptr<Material>> materials;
         std::vector<Triangle> triangles;
 
         for (size_t i = 0; i < mesh->material_count; ++i)
-            materials.push_back(std::make_shared<UberMaterial>(mesh->materials[i].map_Kd.path));
+            materials.push_back(std::make_shared<Material>(mesh->materials[i].map_Kd.path));
 
         for (size_t i = 0; i < mesh->group_count; ++i)
         {

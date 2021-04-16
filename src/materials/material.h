@@ -7,12 +7,13 @@
 #include "../math/ray.h"
 #include "../volumes/hit_result.h"
 
-class UberMaterial {
+class Material {
 public:
+    Material(const char* texture);
     bool Scatter(const Ray&, const HitResult&, Vector3& attenuation, Ray&) const;
 
 private:
-    
+    std::unique_ptr<Vector3[]> texture_;
 };
 
 
