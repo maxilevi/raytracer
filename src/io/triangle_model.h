@@ -21,8 +21,8 @@ public:
 
     [[nodiscard]] inline uint32_t Size() const { return count_; }
 
-private:
     std::unique_ptr<Triangle[]> triangles_;
+private:
     uint32_t count_;
 };
 

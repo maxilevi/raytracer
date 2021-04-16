@@ -10,6 +10,7 @@
 #include "../math/ray.h"
 #include "volume.h"
 #include "../math/matrix3.h"
+#include "../materials/material.h"
 
 class Triangle : public Volume {
 public:
@@ -41,8 +42,9 @@ public:
         UpdateEdges();
     }
 
-    Triangle(Vector3 v0, Vector3 v1, Vector3 v2, Vector3 n0, Vector3 n1, Vector3 n2, Vector3 s, Vector3 t) : Triangle(v0, v1, v2, n0, n1, n2)
+    Triangle(Vector3 v0, Vector3 v1, Vector3 v2, Vector3 n0, Vector3 n1, Vector3 n2, Vector3 s, Vector3 t, std::shared_ptr<Material> material) : Triangle(v0, v1, v2, n0, n1, n2)
     {
+        material_ = material;
         t_[0] = s;
         t_[1] = t;
     };
@@ -61,6 +63,7 @@ private:
     Vector3 n_[3];
     Vector3 e_[2];
     Vector3 t_[2];
+    std::shared_ptr<Material> material_;
 
     void UpdateEdges();
 };
