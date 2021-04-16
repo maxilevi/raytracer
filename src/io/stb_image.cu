@@ -1,4 +1,2 @@
-/*
- * Created by Maximiliano Levi on 4/16/2021.
- */
-
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
