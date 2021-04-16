@@ -10,6 +10,7 @@
 #include "helper.h"
 #include "backends/gpu_backend.h"
 #include "backends/cpu_backend.h"
+#include "scenes/scene_loader.h"
 
 void WriteOutput(const std::string& path, const Camera& camera)
 {
@@ -54,17 +55,17 @@ std::unique_ptr<RenderingBackend> GetBackend(int argc, char** argv)
     std::cout << "No backend supplied, using default \"GPU\"." << std::endl;
     return std::make_unique<GPUBackend>();
 }
-
+/*
 int LoadScene(Scene& scene, std::chrono::time_point<std::chrono::steady_clock> t1)
 {
-    std::shared_ptr<TriangleModel> model = LoadPLY("./../models/aurelius-verylow.ply");
+    std::shared_ptr<TriangleModel> model = LoadPLY("./../models/icosphere.ply");
+    if(model == nullptr) return 1;
 
     std::cout << "Loaded " << model->Size() << " triangles" << std::endl;
     std::cout << "Loading the model took " << TimeIt(t1) << " ms" << std::endl;
-    if(model == nullptr) return 1;
 
     // Icosphere
-    /*
+
     model->Scale(Vector3(0.25));
     model->Transform(Matrix3::FromEuler({0, 90, 0}));
     model->Translate(Vector3(0, 0, -0.5));
@@ -75,36 +76,38 @@ int LoadScene(Scene& scene, std::chrono::time_point<std::chrono::steady_clock> t
     model->Translate(Vector3(0, 0, -0.5));
 */
     // Statue
-    model->Scale(Vector3(1));
-    model->Transform(Matrix3::FromEuler({0, 0, 0}));
-    model->Translate(Vector3(0, 0, -0.5));
-
+    //model->Scale(Vector3(1));
+    //model->Transform(Matrix3::FromEuler({0, 0, 0}));
+    //model->Translate(Vector3(0, 0, -0.5));
+/*
     scene.Add(model);
     std::cout << "Making scene took " << TimeIt(t1) << " ms" << std::endl;
 
     scene.BuildBvh();
     std::cout << "Building the bvh took " << TimeIt(t1) << " ms" << std::endl;
 
-    return 0;
-}
+    return 0;*/
+//}
 
 int main(int argc, char** argv)
 {
-    Scene scene;
+    //Scene scene;
 
     auto t1 = std::chrono::high_resolution_clock::now();
+    auto scene = SceneLoader::LouisXIVScene(false);
+    return 0;
 
-    int r;
-    if ((r = LoadScene(scene, t1)))
-        return r;
+//    int r;
+//    if ((r = LoadScene(scene, t1)))
+//        return r;
 
     /* Backend */
-    std::unique_ptr<RenderingBackend> backend = GetBackend(argc, argv);
-    if (!backend)
-        return 1;
+    //std::unique_ptr<RenderingBackend> backend = GetBackend(argc, argv);
+    //if (!backend)
+    //    return 1;
 
     /* Camera */
-    Camera camera(1920, 1080, backend);
+    /*Camera camera(1920, 1080, backend);
 
     camera.Draw(scene);
 
@@ -112,5 +115,5 @@ int main(int argc, char** argv)
 
     WriteOutput("./output.tga", camera);
 
-    return 0;
+    return 0;*/
 }

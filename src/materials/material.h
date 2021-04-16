@@ -7,9 +7,12 @@
 #include "../math/ray.h"
 #include "../volumes/hit_result.h"
 
-class Material {
+class UberMaterial {
 public:
-    virtual bool Scatter(const Ray&, const HitResult&, Vector3& attenuation, Ray&) const = 0;
+    bool Scatter(const Ray&, const HitResult&, Vector3& attenuation, Ray&) const;
+
+private:
+    
 };
 
 

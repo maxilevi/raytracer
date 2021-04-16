@@ -8,7 +8,7 @@
 
 #include <random>
 #include "math/vector3.h"
-#include "scene.h"
+#include "scenes/scene.h"
 #include "backends/rendering_backend.h"
 
 class Camera {
