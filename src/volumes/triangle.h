@@ -39,7 +39,14 @@ public:
         n_[2] = n2;
 
         UpdateEdges();
+    }
+
+    Triangle(Vector3 v0, Vector3 v1, Vector3 v2, Vector3 n0, Vector3 n1, Vector3 n2, Vector3 s, Vector3 t) : Triangle(v0, v1, v2, n0, n1, n2)
+    {
+        t_[0] = s;
+        t_[1] = t;
     };
+
     bool Hit(const Ray& ray, double t_min, double t_max, HitResult& record) const override;
     bool BoundingBox(AABB& bounding_box) const override;
     void Translate(Vector3 offset);
@@ -53,6 +60,7 @@ private:
     Vector3 v_[3];
     Vector3 n_[3];
     Vector3 e_[2];
+    Vector3 t_[2];
 
     void UpdateEdges();
 };
