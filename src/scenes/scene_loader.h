@@ -18,29 +18,34 @@ public:
         std::vector<std::shared_ptr<Material>> materials;
         std::vector<Triangle> triangles;
 
-        for (size_t i = 0; i < mesh->material_count; ++i)
+        for (size_t i = 0; i < mesh->material_count; ++i) {
             materials.push_back(std::make_shared<Material>(mesh->materials[i].map_Kd.path));
-
+            std::cout << "Loading material \"" << mesh->materials[i].map_Kd.path << "\"" << std::endl;
+        }
         for (size_t i = 0; i < mesh->group_count; ++i)
         {
             auto group = mesh->groups[i];
+            size_t idx = 0;
             for(size_t j = 0; j < group.face_count; ++j)
             {
-                auto index = mesh->indices[group.index_offset + j];
+                auto fv = mesh->face_vertices[group.face_offset + j];
                 auto mat_index = mesh->face_materials[group.index_offset + j];
-                assert(mesh->face_vertices[index.p] == 3);
-
+                assert(fv == 3);
                 Vector3 vertices[3], normals[3], uvs[2];
-                for(int w = 0; w < 3; ++w)
+                for(size_t k = 0; k < fv; ++k)
                 {
-                    vertices[w] = Vector3(mesh->positions[index.p + w * 3 + 0],
-                                          mesh->positions[index.p + w * 3 + 1],
-                                          mesh->positions[index.p + w * 3 + 2]);
-                    normals[w] = Vector3(mesh->normals[index.n + w * 3 + 0],
-                                         mesh->normals[index.n + w * 3 + 1],
-                                         mesh->normals[index.n + w * 3 + 2]);
-                    uvs[0][w] = mesh->texcoords[index.t + w * 2 + 0];
-                    uvs[1][w] = mesh->texcoords[index.t + w * 2 + 1];
+                    auto index = mesh->indices[group.index_offset + idx];
+
+                    vertices[k] = Vector3(mesh->positions[3 * index.p + 0],
+                                          mesh->positions[3 * index.p + 1],
+                                          mesh->positions[3 * index.p + 2]);
+                    normals[k] = Vector3(mesh->normals[3 * index.n + 0],
+                                         mesh->normals[3 * index.n + 1],
+                                         mesh->normals[3 * index.n + 2]);
+                    uvs[0][k] = mesh->texcoords[2 * index.t + 0];
+                    uvs[1][k] = 1.0 - mesh->texcoords[2 * index.t + 1];
+
+                    idx++;
                 }
 
                 triangles.emplace_back(
@@ -65,22 +70,32 @@ public:
 
     }
 
-    static Scene LoadModel(const char* path)
+    static std::shared_ptr<TriangleModel> LoadModel(const char* path)
     {
-        Scene scene;
         std::vector<Triangle> triangles;
         fastObjMesh* mesh = fast_obj_read(path);
 
         auto pair = LoadOBJ(mesh);
-        scene.Add(std::make_shared<TriangleModel>(std::move(pair.first), pair.second));
+        std::cout << "Loaded " << pair.second << " triangles" << std::endl;
+        auto model = std::shared_ptr<TriangleModel>(new TriangleModel(std::move(pair.first), pair.second));
 
         fast_obj_destroy(mesh);
-        return scene;
+        return model;
     }
 
     static Scene LouisXIVScene(bool high_quality)
     {
-        Scene scene = LoadModel(high_quality ? "./../models/louis/high_louis.obj" : "./../models/louis/low_louis.obj");
+        Scene scene;
+
+        auto model = LoadModel("./../models/louis/low_louis.obj");//high_quality ? "./../models/louis/high_louis.obj" : "./../models/louis/low_louis.obj");
+
+        model->Scale(Vector3(1));
+        model->Transform(Matrix3::FromEuler({-3, 0, 0}));
+        model->Translate(Vector3(-0.5, -5.5, -4.5));
+
+        scene.Add(model);
+        scene.BuildBvh();
+
         return scene;
     }
 
