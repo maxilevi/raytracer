@@ -27,12 +27,12 @@ Vector3 Color(const Bvh* bvh, const Ray& ray, std::uniform_real_distribution<dou
         }
         Vector3 target_direction = result.Normal + RenderingBackend::RandomPointOnUnitSphere(dist(gen), dist(gen));
         current_ray = Ray(result.Point, target_direction);
-        color *= 0.8;
+        color *= 0.5;
         if (iteration++ == RenderingBackend::kMaxLightBounces)
             return {0, 0, 0};
     }
     if (any)
-        return first_color;
+        return color * first_color;
     return color * RenderingBackend::BackgroundColor(current_ray);
 }
 

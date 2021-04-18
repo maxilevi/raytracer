@@ -30,7 +30,7 @@ CUDA_DEVICE Vector3 Color(const GPUBvh& bvh, const Ray& ray, uint32_t& seed)
         }
         Vector3 target_direction = result.Normal + RenderingBackend::RandomPointOnUnitSphere(RandomDouble(seed), RandomDouble(seed));
         current_ray = Ray(result.Point, target_direction);
-        shade *= 0.8;
+        shade *= 0.5;
         if (iteration++ == RenderingBackend::kMaxLightBounces)
             return {0, 0, 0};
     }
