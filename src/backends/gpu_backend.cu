@@ -17,17 +17,26 @@ CUDA_DEVICE Vector3 Color(const GPUBvh& bvh, const Ray& ray, uint32_t& seed)
 {
     Ray current_ray = ray;
     HitResult result;
-    Vector3 color = Vector3(1);
+    Vector3 shade = Vector3(1);
+    Vector3 color;
+    bool any = false;
     int iteration = 0;
     while (bvh.Hit(current_ray, 0.001, MAX_DOUBLE, result))
     {
+        if (!any)
+        {
+            any = true;
+            color = result.Color;
+        }
         Vector3 target_direction = result.Normal + RenderingBackend::RandomPointOnUnitSphere(RandomDouble(seed), RandomDouble(seed));
         current_ray = Ray(result.Point, target_direction);
-        color *= 0.5;
+        shade *= 0.8;
         if (iteration++ == RenderingBackend::kMaxLightBounces)
             return {0, 0, 0};
     }
-    return color * RenderingBackend::BackgroundColor(current_ray);
+    if (any)
+        return shade * color;
+    return shade * RenderingBackend::BackgroundColor(current_ray);
 }
 
 __global__
@@ -55,8 +64,8 @@ void GPUBackend::Trace(Scene &scene, const std::vector<std::pair<int, int>>& par
     Vector3 step_x(std::abs(screen_ratio) * 2.0, 0, 0);
     Vector3 step_y(0, 2, 0);
 
-    int n = params.size();
-    int step = n / ((int)ceil(n / (float)33177600));
+    size_t n = params.size();
+    size_t step = n / ((int)ceil(n / (float)33177600));
 
     std::cout << "Total samples to process = " << n << std::endl;
 
@@ -69,7 +78,9 @@ void GPUBackend::Trace(Scene &scene, const std::vector<std::pair<int, int>>& par
 
     std::cout << "Generating GPU Bvh" << std::endl;
 
-    GPUBvh gpu_bvh = GPUBvh::FromBvh(scene.GetBvh());
+    auto gpu_result = GPUBvh::FromBvh(scene.GetBvh());
+    auto gpu_bvh = gpu_result.first;
+    auto gpu_materials = gpu_result.second;
 
     std::cout << "Starting CUDA work" << std::endl;
 
@@ -78,8 +89,8 @@ void GPUBackend::Trace(Scene &scene, const std::vector<std::pair<int, int>>& par
     {
         auto t1 = std::chrono::high_resolution_clock::now();
         std::cout << "Processing elements (" << w << ", " << w + step << ")" << std::endl;
-        int size = MIN(step, params.size() - w);
-        int blocks = (size + THREAD_COUNT - 1) / THREAD_COUNT;
+        size_t size = MIN(step, params.size() - w);
+        size_t blocks = (size + THREAD_COUNT - 1) / THREAD_COUNT;
         std::cout << "Launching " << blocks << " blocks with " << THREAD_COUNT << " threads each (" << (blocks * THREAD_COUNT) << " total threads) for " << step << " elements" << std::endl;
 
         CUDA_CALL(cudaMemcpy(device_params, &params[0] + w, size * 2 * sizeof(int), cudaMemcpyHostToDevice));
@@ -110,6 +121,10 @@ void GPUBackend::Trace(Scene &scene, const std::vector<std::pair<int, int>>& par
     CUDA_CALL(cudaFree(out_colors));
     CUDA_CALL(cudaFree(device_params));
     GPUBvh::Delete(gpu_bvh);
+    for(size_t i = 0; i < gpu_materials.size(); ++i)
+    {
+        gpu_materials[i].FreeGPUMaterial();
+    }
 
     std::cout << "Finished CUDA work." << std::endl;
 }
