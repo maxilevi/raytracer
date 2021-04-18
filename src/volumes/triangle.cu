@@ -6,11 +6,13 @@
 #include "triangle_methods.h"
 #include <limits>
 #include <algorithm>
+#include <assert.h>
 
 std::ostream& operator<<(std::ostream& stream, const Triangle& triangle)
 {
     stream << "(" << triangle.v_[0] << ", " << triangle.v_[1] << ", "  << triangle.v_[2] << ", ";
-    stream << triangle.n_[0] << ", " << triangle.n_[1] << ", "  << triangle.n_[2] << ")";
+    stream << triangle.n_[0] << ", " << triangle.n_[1] << ", "  << triangle.n_[2] << ",";
+    stream << triangle.t_[0] << ", " << triangle.t_[1] << ")";
     return stream;
 }
 
@@ -57,7 +59,7 @@ void Triangle::Transform(Matrix3 transformation)
 
 bool Triangle::Hit(const Ray &ray, double t_min, double t_max, HitResult &record) const
 {
-    return TriangleMethods::Hit(ray, v_, n_, e_, t_min, t_max, record);
+    return TriangleMethods::Hit(ray, v_, n_, e_, t_, material_.get(), t_min, t_max, record);
 }
 
 void Triangle::UpdateEdges()

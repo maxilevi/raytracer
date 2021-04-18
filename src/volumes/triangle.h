@@ -54,6 +54,7 @@ public:
     void Translate(Vector3 offset);
     void Scale(Vector3 scale);
     void Transform(Matrix3 transformation);
+    const std::shared_ptr<Material>& GetMaterial() { return material_; }
 
     friend std::ostream& operator<<(std::ostream& stream, const Triangle& triangle);
     friend class GPUTriangle;

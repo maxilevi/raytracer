@@ -7,9 +7,10 @@
 
 struct HitResult
 {
-    double t = 0;
+    double u = 0, v = 0, t = 0;
     Vector3 Point;
     Vector3 Normal;
+    Vector3 Color;
 };
 
 #endif //RAYTRACER_HIT_RESULT_H

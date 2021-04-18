@@ -7,5 +7,5 @@
 
 CUDA_DEVICE bool GPUTriangle::Hit(const Ray &ray, double t_min, double t_max, HitResult &record) const
 {
-    return TriangleMethods::Hit(ray, v_, n_, e_, t_min, t_max, record);
+    return TriangleMethods::Hit(ray, v_, n_, e_, t_, &material_, t_min, t_max, record);
 }

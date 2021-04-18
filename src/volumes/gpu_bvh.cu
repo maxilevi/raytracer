@@ -72,7 +72,18 @@ CUDA_DEVICE bool GPUBvhNode::Hit(const Ray &ray, double t_min, double t_max) con
     return this->box_.Hit(ray, t_min, t_max);
 }
 
-int GPUBvh::BvhDfs(std::vector<GPUBvhNode>& nodes, std::vector<GPUTriangle>& tris, Bvh* cpu_bvh)
+GPUMaterial GPUBvh::AddMaterialIfNecessary(Triangle* tri, std::vector<GPUMaterial>& mats)
+{
+    for(size_t i = 0; i < mats.size(); ++i)
+    {
+        if (mats[i].Id() == tri->GetMaterial()->Id())
+            return mats[i];
+    }
+    mats.push_back(tri->GetMaterial()->MakeGPUMaterial());
+    return mats[mats.size()-1];
+}
+
+int GPUBvh::BvhDfs(std::vector<GPUBvhNode>& nodes, std::vector<GPUTriangle>& tris, std::vector<GPUMaterial>& mats, Bvh* cpu_bvh)
 {
     size_t objects_left = cpu_bvh->end_ - cpu_bvh->start_;
     auto* left_child = cpu_bvh->left_.get();
@@ -80,7 +91,7 @@ int GPUBvh::BvhDfs(std::vector<GPUBvhNode>& nodes, std::vector<GPUTriangle>& tri
     if (objects_left == 1)
     {
         auto* tri = (Triangle*)left_child;
-        tris.emplace_back(tri);
+        tris.emplace_back(tri, AddMaterialIfNecessary(tri, mats));
 
         nodes.emplace_back((int)nodes.size(), cpu_bvh, (int)(tris.size()-1), (int)(tris.size()-1), true);
     }
@@ -89,14 +100,14 @@ int GPUBvh::BvhDfs(std::vector<GPUBvhNode>& nodes, std::vector<GPUTriangle>& tri
         auto* tri1 = (Triangle*)left_child;
         auto* tri2 = (Triangle*)right_child;
 
-        tris.emplace_back(tri1);
-        tris.emplace_back(tri2);
+        tris.emplace_back(tri1, AddMaterialIfNecessary(tri1, mats));
+        tris.emplace_back(tri2, AddMaterialIfNecessary(tri1, mats));
 
         nodes.emplace_back((int)nodes.size(), cpu_bvh, (int)(tris.size()-2), (int)(tris.size()-1), true);
     }
     else {
-        auto left_idx = BvhDfs(nodes, tris, (Bvh *) left_child);
-        auto right_idx = BvhDfs(nodes, tris, (Bvh *) right_child);
+        auto left_idx = BvhDfs(nodes, tris, mats, (Bvh *) left_child);
+        auto right_idx = BvhDfs(nodes, tris, mats, (Bvh *) right_child);
 
         nodes.emplace_back((int)nodes.size(), cpu_bvh, left_idx, right_idx, false);
     }
@@ -104,11 +115,12 @@ int GPUBvh::BvhDfs(std::vector<GPUBvhNode>& nodes, std::vector<GPUTriangle>& tri
     return nodes.size()-1;
 }
 
-GPUBvh GPUBvh::FromBvh(Bvh* cpu_bvh)
+std::pair<GPUBvh, std::vector<GPUMaterial>> GPUBvh::FromBvh(Bvh* cpu_bvh)
 {
     std::vector<GPUBvhNode> nodes;
     std::vector<GPUTriangle> tris;
-    auto starting_node = BvhDfs(nodes, tris, cpu_bvh);
+    std::vector<GPUMaterial> mats;
+    auto starting_node = BvhDfs(nodes, tris, mats, cpu_bvh);
 
     GPUBvh bvh;
     bvh.starting_node = starting_node;
@@ -123,7 +135,7 @@ GPUBvh GPUBvh::FromBvh(Bvh* cpu_bvh)
     CUDA_CALL(cudaMemcpy(bvh.bvh_nodes, &nodes[0], sizeof(GPUBvhNode) * nodes.size(), cudaMemcpyHostToDevice));
     CUDA_CALL(cudaMemcpy(bvh.gpu_triangles, &tris[0], sizeof(GPUTriangle) * tris.size(), cudaMemcpyHostToDevice));
 
-    return bvh;
+    return std::make_pair(bvh, mats);
 }
 
 void GPUBvh::Delete(GPUBvh bvh)

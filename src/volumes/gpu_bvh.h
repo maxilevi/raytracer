@@ -9,6 +9,7 @@
 #include "bvh.h"
 #include <vector>
 #include "gpu_triangle.h"
+#include "../materials/material.h"
 
 #ifndef RAYTRACER_GPU_BVH_H
 #define RAYTRACER_GPU_BVH_H
@@ -37,12 +38,13 @@ public:
 class GPUBvh {
 public:
     CUDA_DEVICE bool Hit(const Ray& ray, double t_min, double t_max, HitResult& record) const;
-    static GPUBvh FromBvh(Bvh* cpu_bvh);
+    static std::pair<GPUBvh, std::vector<GPUMaterial>> FromBvh(Bvh* cpu_bvh);
     static void Delete(GPUBvh bvh);
 
 private:
     GPUBvh() : node_count(0), triangle_count(0), bvh_nodes(nullptr), gpu_triangles(nullptr) {};
-    static int BvhDfs(std::vector<GPUBvhNode>& nodes, std::vector<GPUTriangle>& tris, Bvh* cpu_bvh);
+    static int BvhDfs(std::vector<GPUBvhNode>& nodes, std::vector<GPUTriangle>& tris, std::vector<GPUMaterial>& mats, Bvh* cpu_bvh);
+    static GPUMaterial AddMaterialIfNecessary(Triangle*, std::vector<GPUMaterial>&);
 
     size_t starting_node;
     size_t node_count;

@@ -11,15 +11,19 @@
 
 class GPUTriangle {
 public:
-    GPUTriangle(Triangle* triangle)
+    GPUTriangle(Triangle* triangle, GPUMaterial material)
     {
         for(int i = 0; i < 3; ++i)
         {
             v_[i] = triangle->v_[i];
             n_[i] = triangle->n_[i];
         }
-        e_[0] = v_[1] - v_[0];
-        e_[1] = v_[2] - v_[0];
+        for(int i = 0; i < 2; ++i)
+        {
+            e_[i] = triangle->e_[i];
+            t_[i] = triangle->t_[i];
+        }
+        material_ = material;
     }
     CUDA_DEVICE bool Hit(const Ray &ray, double t_min, double t_max, HitResult &record) const;
 
@@ -27,6 +31,8 @@ private:
     Vector3 v_[3];
     Vector3 n_[3];
     Vector3 e_[2];
+    Vector3 t_[2];
+    GPUMaterial material_;
 };
 
 

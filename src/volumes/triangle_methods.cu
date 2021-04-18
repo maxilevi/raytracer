@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Created by Maximiliano Levi on 4/14/2021.
  */
 
@@ -66,40 +66,79 @@ CUDA_HOST_DEVICE bool TriangleMethods::Intersects(const Ray &ray, const Vector3*
 #endif
 }
 
-CUDA_HOST_DEVICE bool TriangleMethods::Intersects2(const Ray &ray, const Vector3* vertices, const Vector3* normals, const Vector3* edges, double &t, double& u, double &v)
+CUDA_HOST_DEVICE bool TriangleMethods::Intersects3(const Ray &ray, const Vector3* vertices, const Vector3* normals, const Vector3* edges, double &t, double& u, double &v)
 {
-    /*
-     * ray = P0 + D * t
-     * plane = P . N + d = 0
-     * = (P0 + D * t) . N + d = 0
-     * => t = -(P0 . N + d) / (D . N)
-     * */
-    Vector3 normal = normals[0];
-    double d = Vector3::Dot(normal, vertices[0]);
+    // compute plane's normal
+    auto v0 = vertices[0];
+    auto v1 = vertices[1];
+    auto v2 = vertices[2];
 
-    t = -(Vector3::Dot(ray.Origin(), normal) + d) / Vector3::Dot(ray.Direction(), normal);
-    Vector3 p = ray.Point(t);
-    for(int i = 0; i < 3; ++i)
-    {
-        auto v1 = vertices[(0 + i) % 3] - p;
-        auto v2 = vertices[(1 + i) % 3] - p;
-        auto n1 = Vector3::Cross(v1, v2);
-        auto d1 = -Vector3::Dot(ray.Origin(), n1);
-        if (Vector3::Dot(p, n1) + d1 < 0)
-            return false;
-    }
-    return true;
+    Vector3 v0v1 = edges[0];
+    Vector3 v0v2 = edges[1];
+    // no need to normalize
+    Vector3 N = Vector3::Cross(v0v1, v0v2); // N
+    float denom = Vector3::Dot(N, N);
+
+    // Step 1: finding P
+
+    // check if ray and plane are parallel ?
+    float NdotRayDirection = Vector3::Dot(N, ray.Direction());
+    if (fabs(NdotRayDirection) < DBL_EPSILON) // almost 0
+        return false; // they are parallel so they don't intersect !
+
+    // compute d parameter using equation 2
+    float d = Vector3::Dot(N, v0);
+
+    // compute t (equation 3)
+    t = (Vector3::Dot(N, ray.Origin()) + d) / NdotRayDirection;
+    // check if the triangle is in behind the ray
+    if (t < 0) return false; // the triangle is behind
+
+    // compute the intersection point using equation 1
+    Vector3 P = ray.Point(t);
+
+    // Step 2: inside-outside test
+    Vector3 C; // vector perpendicular to triangle's plane
+
+    // edge 0
+    Vector3 edge0 = v1 - v0;
+    Vector3 vp0 = P - v0;
+    C = Vector3::Cross(edge0, vp0);
+    if (Vector3::Dot(N, C) < 0) return false;
+
+    // edge 1
+    Vector3 edge1 = v2 - v1;
+    Vector3 vp1 = P - v1;
+    C = Vector3::Cross(edge1, vp1);
+    if ((u = Vector3::Dot(N, C)) < 0)  return false;
+
+    // edge 2
+    Vector3 edge2 = v0 - v2;
+    Vector3 vp2 = P - v2;
+    C = Vector3::Cross(edge2, vp2);
+    if ((v = Vector3::Dot(N, C)) < 0) return false;
+
+    u /= denom;
+    v /= denom;
+
+    return true; // this ray hits the triangle
 }
 
+
 CUDA_HOST_DEVICE bool TriangleMethods::Hit(const Ray &ray, const Vector3* vertices, const Vector3* normals, const Vector3* edges,
-                                           double t_min, double t_max, HitResult &record)
+                                           const Vector3* texture_coords, const Material* material, double t_min, double t_max, HitResult &record)
 {
     double t, u, v;
-    if (!Intersects(ray, vertices, normals, edges, t, u, v)) return false;
+    if (!Intersects3(ray, vertices, normals, edges, t, u, v)) return false;
     if (t >= t_max || t <= t_min) return false;
+    double r =  (1 - u - v);
     record.t = t;
+    record.u = u;
+    record.v = v;
     record.Point = ray.Point(record.t);
-    // TODO: Interpolate normals with barycentric coordinates
-    record.Normal = u * normals[0] + v * normals[1] + (1 - u - v) * normals[2];
+    record.Normal = u * normals[0] + v * normals[1] + r * normals[2];
+    double coord0 = u * texture_coords[0][0] + v * texture_coords[0][1] + r * texture_coords[0][2];
+    double coord1 = u * texture_coords[1][0] + v * texture_coords[1][1] + r * texture_coords[1][2];
+    record.Color = material->BilinearSample(coord0, coord1);
     return true;
 }
