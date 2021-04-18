@@ -67,7 +67,7 @@ int main(int argc, char** argv)
         return 1;
 
     /* Camera */
-    Camera camera(1920 / 2, 1080 / 2, backend);
+    Camera camera(1920, 1080, backend);
 
     camera.Draw(scene);
 

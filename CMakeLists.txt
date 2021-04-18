@@ -13,7 +13,9 @@ add_executable(raytracer ${HEADER_FILES} ${CUDA_FILES} ${CPP_FILES} src/io/tga.c
 #SET(CMAKE_CUDA_FLAGS ${CUDA_NVCC_FLAGS} -O3)
 #set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -G -g")
 #target_compile_options(raytracer PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-lineinfo>)
-target_compile_options(raytracer PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-Xptxas -O3,-v, -O3>)
+if (CMAKE_BUILD_TYPE EQUAL "RELEASE")
+    target_compile_options(raytracer PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-Xptxas -O3,-v, -O3>)
+endif()
 set_target_properties(
         raytracer
         PROPERTIES

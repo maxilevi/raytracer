@@ -13,7 +13,7 @@
 
 class Camera {
 public:
-    const int kAntialiasingSamples = 4;
+    const int kAntialiasingSamples = 8;
     const double kGamma = 1.5;
 
     Camera(uint32_t width, uint32_t height, std::unique_ptr<RenderingBackend>& backend) : width_(width), height_(height), backend_(std::move(backend)) {
