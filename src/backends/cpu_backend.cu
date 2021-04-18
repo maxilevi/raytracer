@@ -15,7 +15,7 @@ Vector3 Color(const Bvh* bvh, const Ray& ray, std::uniform_real_distribution<dou
 {
     Ray current_ray = ray;
     HitResult result;
-    Vector3 color = Vector3(1);
+    Vector3 color = Vector3(2);
     int iteration = 0;
     bool any = false;
     Vector3 first_color;
@@ -33,7 +33,7 @@ Vector3 Color(const Bvh* bvh, const Ray& ray, std::uniform_real_distribution<dou
     }
     if (any)
         return color * first_color;
-    return color * RenderingBackend::BackgroundColor(current_ray);
+    return RenderingBackend::BackgroundColor(current_ray);
 }
 
 void CPUBackend::Trace(Scene &scene, const std::vector <std::pair<int, int>> &params, Vector3 *colors, int width, int height)

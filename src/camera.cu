@@ -31,15 +31,14 @@ void Camera::NormalizeFrame()
 void Camera::Draw(Scene& scene)
 {
     std::vector<std::pair<int, int>> params;
-    for (int32_t j = height_-1; j > -1; --j)
-    {
-        for (int32_t i = 0; i < (int32_t)width_; ++i)
-        {
-            for(int s = 0; s < Camera::kAntialiasingSamples; ++s)
-            {
+    for(int s = 0; s < Camera::kAntialiasingSamples; ++s) {
+        for (int32_t j = height_ - 1; j > -1; --j) {
+            for (int32_t i = 0; i < (int32_t) width_; ++i) {
+
                 params.emplace_back(i, j);
+                if (s == 0)
+                    this->colors_[j * width_ + i] = Vector3();
             }
-            this->colors_[j * width_ + i] = Vector3();
         }
     }
 

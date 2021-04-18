@@ -17,7 +17,7 @@ CUDA_DEVICE Vector3 Color(const GPUBvh& bvh, const Ray& ray, uint32_t& seed)
 {
     Ray current_ray = ray;
     HitResult result;
-    Vector3 shade = Vector3(1);
+    Vector3 shade = Vector3(2);
     Vector3 color;
     bool any = false;
     int iteration = 0;
@@ -36,7 +36,7 @@ CUDA_DEVICE Vector3 Color(const GPUBvh& bvh, const Ray& ray, uint32_t& seed)
     }
     if (any)
         return shade * color;
-    return shade * RenderingBackend::BackgroundColor(current_ray);
+    return RenderingBackend::BackgroundColor(current_ray);
 }
 
 __global__
