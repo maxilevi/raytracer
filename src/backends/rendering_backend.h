@@ -10,7 +10,7 @@
 
 class RenderingBackend {
 public:
-    static const int kMaxLightBounces = 8;
+    static const int kMaxLightBounces = 20;
 
     virtual void Trace(Scene& scene, const std::vector<std::pair<int, int>>& params, Vector3* colors, int width, int height) = 0;
     static CUDA_HOST_DEVICE Vector3 RandomPointOnUnitSphere(double u1, double u2);
