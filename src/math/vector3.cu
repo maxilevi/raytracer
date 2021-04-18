@@ -86,6 +86,11 @@ CUDA_HOST_DEVICE Vector3& Vector3::operator /=(const double& Scalar)
     return *this;
 }
 
+CUDA_HOST_DEVICE Vector3 Vector3::Lerp(const Vector3 &a, const Vector3 &b, double t)
+{
+    return (1.0 - t) * a + b * t;
+}
+
 std::ostream& operator<<(std::ostream& stream, const Vector3& vector)
 {
     stream << "(" << vector.v_[0] << ", " << vector.v_[1] << ", "  << vector.v_[2] << ")";
