@@ -10,6 +10,13 @@ wip raytracer written from scratch in C++. the program processes a defined scene
 
 ![](screenshots/diffuse_big.png)
 
+# features
+
+* ambient occlusion
+* uv mapping
+* diffuse shading
+* metal shading [?]
+
 # benchmarks
 
 coming soon
