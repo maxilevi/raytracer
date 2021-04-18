@@ -2,6 +2,8 @@
  * Created by Maximiliano Levi on 4/17/2021.
  */
 
+#include "tga.h"
+
 void TGAWrite(const std::string& filename, uint32_t width, uint32_t height, uint8_t* data_bgr, uint8_t channels)
 {
     std::ofstream file;
