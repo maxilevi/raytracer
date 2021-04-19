@@ -15,7 +15,7 @@ Vector3 Color(const Bvh* bvh, const Ray& ray, std::uniform_real_distribution<dou
 {
     Ray current_ray = ray;
     HitResult result;
-    Vector3 color = Vector3(2);
+    Vector3 color = Vector3(1.25);
     int iteration = 0;
     bool any = false;
     Vector3 first_color;
@@ -27,7 +27,7 @@ Vector3 Color(const Bvh* bvh, const Ray& ray, std::uniform_real_distribution<dou
         }
         Vector3 target_direction = result.Normal + RenderingBackend::RandomPointOnUnitSphere(dist(gen), dist(gen));
         current_ray = Ray(result.Point, target_direction);
-        color *= 0.5;
+        color *= 0.8;
         if (iteration++ == RenderingBackend::kMaxLightBounces)
             return {0, 0, 0};
     }
@@ -36,15 +36,15 @@ Vector3 Color(const Bvh* bvh, const Ray& ray, std::uniform_real_distribution<dou
     return RenderingBackend::BackgroundColor(current_ray);
 }
 
-void CPUBackend::Trace(Scene &scene, const std::vector <std::pair<int, int>> &params, Vector3 *colors, int width, int height)
+void CPUBackend::Trace(Scene &scene, const std::vector <std::pair<int, int>> &params, Vector3 *colors, Viewport& viewport)
 {
     assert(scene.GetBvh() != nullptr);
-
-    double screen_ratio = (double(width) / double(height));
-    Vector3 origin(0, 0, 0);
-    Vector3 screen(-screen_ratio, -1, -1);
-    Vector3 step_x(std::abs(screen_ratio) * 2.0, 0, 0);
-    Vector3 step_y(0, 2, 0);
+    auto width = viewport.width;
+    auto height = viewport.height;
+    Vector3 origin = viewport.origin;
+    Vector3 screen = viewport.view_port_lower_left_corner;
+    Vector3 step_x = viewport.horizontal;
+    Vector3 step_y = viewport.vertical;
     auto* bvh = scene.GetBvh();
     std::random_device rd;
     std::mt19937 gen(rd());

@@ -77,17 +77,17 @@ CUDA_HOST_DEVICE bool TriangleMethods::Intersects3(const Ray &ray, const Vector3
     Vector3 v0v2 = edges[1];
     // no need to normalize
     Vector3 N = Vector3::Cross(v0v1, v0v2); // N
-    float denom = Vector3::Dot(N, N);
+    double denom = Vector3::Dot(N, N);
 
     // Step 1: finding P
 
     // check if ray and plane are parallel ?
-    float NdotRayDirection = Vector3::Dot(N, ray.Direction());
+    double NdotRayDirection = Vector3::Dot(N, ray.Direction());
     if (fabs(NdotRayDirection) < DBL_EPSILON) // almost 0
         return false; // they are parallel so they don't intersect !
 
     // compute d parameter using equation 2
-    float d = Vector3::Dot(N, v0);
+    double d = Vector3::Dot(N, v0);
 
     // compute t (equation 3)
     t = (Vector3::Dot(N, ray.Origin()) + d) / NdotRayDirection;
@@ -101,9 +101,8 @@ CUDA_HOST_DEVICE bool TriangleMethods::Intersects3(const Ray &ray, const Vector3
     Vector3 C; // vector perpendicular to triangle's plane
 
     // edge 0
-    Vector3 edge0 = v1 - v0;
     Vector3 vp0 = P - v0;
-    C = Vector3::Cross(edge0, vp0);
+    C = Vector3::Cross(v0v1, vp0);
     if (Vector3::Dot(N, C) < 0) return false;
 
     // edge 1
@@ -131,14 +130,16 @@ CUDA_HOST_DEVICE bool TriangleMethods::Hit(const Ray &ray, const Vector3* vertic
     double t, u, v;
     if (!Intersects3(ray, vertices, normals, edges, t, u, v)) return false;
     if (t >= t_max || t <= t_min) return false;
-    double r =  (1 - u - v);
+    double r =  (1.0 - u - v);
     record.t = t;
     record.u = u;
     record.v = v;
     record.Point = ray.Point(record.t);
-    record.Normal = u * normals[0] + v * normals[1] + r * normals[2];
+    record.Normal = Vector3::Cross(edges[0], edges[1]);//u * normals[0] + v * normals[1] + r * normals[2];
     double coord0 = u * texture_coords[0][0] + v * texture_coords[0][1] + r * texture_coords[0][2];
     double coord1 = u * texture_coords[1][0] + v * texture_coords[1][1] + r * texture_coords[1][2];
-    record.Color = material->BilinearSample(coord0, coord1);
+    record.Color = material->Sample(coord0, coord1);
+    //if (record.Color.X() <= DBL_EPSILON && record.Color.Y() <= DBL_EPSILON && record.Color.Z() <= DBL_EPSILON)
+    //    record.Color = Vector3(1, 0, 0);//printf("error %f %f %f, %f %f\n", u, v, r, coord0, coord1);
     return true;
 }

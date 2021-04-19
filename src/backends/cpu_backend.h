@@ -8,7 +8,7 @@
 
 class CPUBackend : public RenderingBackend {
 public:
-    void Trace(Scene& scene, const std::vector<std::pair<int, int>>& params, Vector3* colors, int width, int height) override;
+    void Trace(Scene& scene, const std::vector<std::pair<int, int>>& params, Vector3* colors, Viewport& viewport) override;
 };
 
 

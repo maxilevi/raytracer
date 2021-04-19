@@ -13,13 +13,14 @@
 
 class Camera {
 public:
-    const int kAntialiasingSamples = 8;
+    const int kAntialiasingSamples = 1;
     const double kGamma = 1.5;
 
-    Camera(uint32_t width, uint32_t height, std::unique_ptr<RenderingBackend>& backend) : width_(width), height_(height), backend_(std::move(backend)) {
+    Camera(uint32_t width, uint32_t height, std::unique_ptr<RenderingBackend>& backend) : width_(width), height_(height), backend_(std::move(backend))
+    {
         this->colors_ = std::unique_ptr<Vector3[]>(new Vector3[width * height]);
     };
-
+    void Configure(Vector3 position, Vector3 look_at, double fov);
     void Draw(Scene&);
 
     /* Accessors and mutators */
@@ -28,6 +29,10 @@ public:
     inline Vector3 const * GetFrame() const { return this->colors_.get(); }
 
 private:
+    Vector3 view_port_lower_left_corner_;
+    Vector3 origin_;
+    Vector3 horizontal_;
+    Vector3 vertical_;
     uint32_t width_;
     uint32_t height_;
     std::unique_ptr<RenderingBackend> backend_;

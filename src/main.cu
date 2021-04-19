@@ -67,8 +67,8 @@ int main(int argc, char** argv)
         return 1;
 
     /* Camera */
-    Camera camera(1920, 1080, backend);
-
+    Camera camera(1920 / 4, 1080 / 4, backend);
+    camera.Configure(Vector3(0, 0, 0), Vector3(0, -0.5, -5), 90);
     camera.Draw(scene);
 
     std::cout << "Drawing took " << TimeIt(t1) / 1000 << " s" << std::endl;

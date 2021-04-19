@@ -6,13 +6,14 @@
 #define RAYTRACER_RENDERING_BACKEND_H
 #include "../kernel/helper.h"
 #include "../scenes/scene.h"
+#include "../viewport.h"
 #include <vector>
 
 class RenderingBackend {
 public:
-    static const int kMaxLightBounces = 20;
+    static const int kMaxLightBounces = 128;
 
-    virtual void Trace(Scene& scene, const std::vector<std::pair<int, int>>& params, Vector3* colors, int width, int height) = 0;
+    virtual void Trace(Scene& scene, const std::vector<std::pair<int, int>>& params, Vector3* colors, Viewport& viewport) = 0;
     static CUDA_HOST_DEVICE Vector3 RandomPointOnUnitSphere(double u1, double u2);
     static CUDA_HOST_DEVICE Vector3 BackgroundColor(const Ray& ray);
 };

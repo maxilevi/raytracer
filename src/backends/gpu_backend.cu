@@ -17,7 +17,7 @@ CUDA_DEVICE Vector3 Color(const GPUBvh& bvh, const Ray& ray, uint32_t& seed)
 {
     Ray current_ray = ray;
     HitResult result;
-    Vector3 shade = Vector3(2);
+    double shade = 1.25;
     Vector3 color;
     bool any = false;
     int iteration = 0;
@@ -30,7 +30,7 @@ CUDA_DEVICE Vector3 Color(const GPUBvh& bvh, const Ray& ray, uint32_t& seed)
         }
         Vector3 target_direction = result.Normal + RenderingBackend::RandomPointOnUnitSphere(RandomDouble(seed), RandomDouble(seed));
         current_ray = Ray(result.Point, target_direction);
-        shade *= 0.5;
+        shade *= 0.8;
         if (iteration++ == RenderingBackend::kMaxLightBounces)
             return {0, 0, 0};
     }
@@ -45,7 +45,7 @@ void ColorKernel(GPUBvh bvh, Vector3* out_colors, const int* device_params, int 
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= n) return;
 
-    uint32_t seed = idx;
+    uint32_t seed = idx * 2047;
     int i = device_params[2*idx];
     int j = device_params[2*idx+1];
     double noise = RandomDouble(seed);
@@ -56,13 +56,14 @@ void ColorKernel(GPUBvh bvh, Vector3* out_colors, const int* device_params, int 
     out_colors[idx] = Color(bvh, r, seed);
 }
 
-void GPUBackend::Trace(Scene &scene, const std::vector<std::pair<int, int>>& params, Vector3 *colors, int width, int height)
+void GPUBackend::Trace(Scene &scene, const std::vector<std::pair<int, int>>& params, Vector3 *colors, Viewport& viewport)
 {
-    double screen_ratio = (double(width) / double(height));
-    Vector3 origin(0, 0, 0);
-    Vector3 screen(-screen_ratio, -1, -1);
-    Vector3 step_x(std::abs(screen_ratio) * 2.0, 0, 0);
-    Vector3 step_y(0, 2, 0);
+    auto width = viewport.width;
+    auto height = viewport.height;
+    Vector3 origin = viewport.origin;
+    Vector3 screen = viewport.view_port_lower_left_corner;
+    Vector3 step_x = viewport.horizontal;
+    Vector3 step_y = viewport.vertical;
 
     size_t n = params.size();
     size_t step = n / ((int)ceil(n / (float)33177600));
