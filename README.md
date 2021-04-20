@@ -6,10 +6,6 @@ wip raytracer written from scratch in C++. the program processes a defined scene
 
 ![](screenshots/free_france.png)
 
-![](screenshots/statue.png)
-
-![](screenshots/diffuse_big.png)
-
 # features
 
 * ambient occlusion
