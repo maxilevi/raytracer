@@ -6,16 +6,14 @@ wip raytracer written from scratch in C++. the program processes a defined scene
 
 ![](screenshots/free_france.png)
 
-![](screenshots/statue.png)
-
-![](screenshots/diffuse_big.png)
-
 # features
 
+* perpective camera [?]
 * ambient occlusion
 * uv mapping
 * diffuse shading
 * metal shading [?]
+* lights [?]
 
 # benchmarks
 
@@ -37,7 +35,9 @@ the project currently has 2 available backends to use for computation, these are
 
 ## models
 
-current version supports the loading of 3d `.ply` models. model loading is done via a simple parser written in C++ (see `src/io/ply.h`)`, from it a group of triangles are extracted and these are used to raycast against. to calculate the intersection between a triangle and a ray the engine uses the [Möller–Trumbore intersection algorithm](https://en.wikipedia.org/wiki/M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm)
+current version supports the loading of 3d `.ply` models. model loading is done via a simple parser written in C++ (see `src/io/ply.h`), from it a group of triangles are extracted and these are used to raycast against. support for obj is also available thanks to an external lib (see credits)
+
+to calculate the intersection between a triangle and a ray the engine uses the [Möller–Trumbore intersection algorithm(https://en.wikipedia.org/wiki/M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm) 
 
 ## bvh
 
