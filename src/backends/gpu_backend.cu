@@ -11,7 +11,7 @@
 #include "../helper.h"
 #include "../kernel/random.h"
 
-#define THREAD_COUNT 256
+#define THREAD_COUNT 512
 
 __global__
 void ColorKernel(GPUBvh bvh, double* randoms, Vector3* out_colors, const int* device_params, int n, int width, int height, Vector3 origin, Vector3 screen, Vector3 step_x, Vector3 step_y)
