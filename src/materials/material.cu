@@ -13,11 +13,11 @@ int Material::ID_COUNTER = 0;
 Material::Material(const char *filename)
 {
     int w, h, n;
-    unsigned char *data = stbi_load(filename, &w, &h, &n, 3);
+    uchar_t *data = stbi_load(filename, &w, &h, &n, 3);
     assert(w != 0);
     assert(h != 0);
     assert(n == 3);
-    auto colors = new uint8_t[w * h * 3];
+    auto colors = new uchar_t[w * h * 3];
     for(size_t j = 0; j < h * w * 3; ++j)
         colors[j] = data[j];
 
@@ -33,23 +33,18 @@ Material::Material(const char *filename)
 
 CUDA_HOST_DEVICE Vector3 Material::Sample(double s, double t) const
 {
-    if (s < 0.0 || s > 1.0)
-        printf("error %f", s);
-    if (t < 0.0 || t > 1.0)
-        printf("error %f", t);
     auto x = size_t(s * width_);
     auto y = size_t(t * height_);
 
     Vector3 ans;
     for(auto i = 0; i < 3; ++i)
     {
-        //Modulo(ref X) * _boundsY * _boundsZ + Y * _boundsZ + Modulo(ref Z)
-        auto idx = y * width_ * 3 + x * 3 + i;//y * width_ * 3 + x * 3 + i;
+        auto idx = y * width_ * 3 + x * 3 + i;
         ans[i] = this->texture_[idx];
     }
+    //if (ans.X() <= DBL_EPSILON && ans.Y() <= DBL_EPSILON && ans.Z() <= DBL_EPSILON)
+    //    printf("Pixels %d %d have no color\n", (int)x, (int)y);
     return ans / 256.0;
-    //printf("%d, %d %d\n", (int)offset, (int)width_, (int)height_);
-    //return Vector3(this->texture_[offset + 0], this->texture_[offset + 1], this->texture_[offset + 2]) / 256.0;
 }
 
 CUDA_HOST_DEVICE Vector3 Material::BilinearSample(double s, double t) const
@@ -58,12 +53,14 @@ CUDA_HOST_DEVICE Vector3 Material::BilinearSample(double s, double t) const
     auto floored_t = (size_t(t * height_) / double(height_));
     auto x = (s - floored_s) / texel_width_;
     auto y = (t - floored_t) / texel_height_;
+    auto tw = texel_width_;
+    auto th = texel_height_;
 
     auto center = this->Sample(s, t);
-    auto top_left = this->Sample(s - texel_width_, t + texel_height_);
-    auto bot_left = this->Sample(s - texel_width_, t - texel_height_);
-    auto top_right = this->Sample(s + texel_width_, t + texel_height_);
-    auto bot_right = this->Sample(s + texel_width_, t - texel_height_);
+    auto top_left = this->Sample(s - tw, t + th);
+    auto bot_left = this->Sample(s - tw, t - th);
+    auto top_right = this->Sample(s + tw, t + th);
+    auto bot_right = this->Sample(s + tw, t - th);
 
     return Vector3::Lerp(Vector3::Lerp(bot_left, bot_right, x), Vector3::Lerp(top_left, top_right, x), y);
 }
@@ -84,9 +81,10 @@ Material Material::MakeGPUMaterial()
     mat.height_ = height_;
     mat.id_ = id_;
     assert(mat.width_ != 0);
+    assert(mat.height_ != 0);
 
-    CUDA_CALL(cudaMalloc(&mat.texture_, sizeof(uint8_t) * width_ * height_ * 3));
-    CUDA_CALL(cudaMemcpy(mat.texture_, texture_, sizeof(uint8_t) * width_ * height_ * 3, cudaMemcpyHostToDevice));
+    CUDA_CALL(cudaMalloc(&mat.texture_, sizeof(uchar_t) * width_ * height_ * 3));
+    CUDA_CALL(cudaMemcpy(mat.texture_, texture_, sizeof(uchar_t) * width_ * height_ * 3, cudaMemcpyHostToDevice));
     return mat;
 }
 
@@ -99,3 +97,17 @@ int Material::Id()
 {
     return id_;
 }
+/*
+bool Material::Scatter(const Ray& , const HitResult & result, Vector3 &attenuation, Ray &) const
+{
+    auto scatter_direction = rec.normal + random_unit_vector();
+    scattered = ray(rec.p, scatter_direction);
+    attenuation = albedo;
+    return true;
+
+    Vector3 reflected = reflect(unit_vector(r_in.direction()), rec.normal);
+    scattered = ray(rec.p, reflected);
+    attenuation = albedo;
+    return (dot(scattered.direction(), rec.normal) > 0);
+}
+*/

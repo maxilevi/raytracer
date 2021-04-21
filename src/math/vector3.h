@@ -78,6 +78,7 @@ public:
     CUDA_HOST_DEVICE static double Dot(const Vector3& a, const Vector3& b);
     CUDA_HOST_DEVICE static Vector3 Cross(const Vector3& a, const Vector3& b);
     CUDA_HOST_DEVICE static Vector3 Lerp(const Vector3& a, const Vector3& b, double t);
+    CUDA_HOST_DEVICE static Vector3 Reflect(const Vector3& v, const Vector3& n);
 
     static const Vector3 UnitX;
     static const Vector3 UnitY;

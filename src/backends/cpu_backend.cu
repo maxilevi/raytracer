@@ -10,32 +10,6 @@
 
 #define THREAD_COUNT 32
 
-
-Vector3 Color(const Bvh* bvh, const Ray& ray, std::uniform_real_distribution<double> dist, std::mt19937 gen)
-{
-    Ray current_ray = ray;
-    HitResult result;
-    Vector3 color = Vector3(1.25);
-    int iteration = 0;
-    bool any = false;
-    Vector3 first_color;
-    while (bvh->Hit(current_ray, 0.001, MAX_DOUBLE, result))
-    {
-        if (!any) {
-            first_color = result.Color;
-            any = true;
-        }
-        Vector3 target_direction = result.Normal + RenderingBackend::RandomPointOnUnitSphere(dist(gen), dist(gen));
-        current_ray = Ray(result.Point, target_direction);
-        color *= 0.8;
-        if (iteration++ == RenderingBackend::kMaxLightBounces)
-            return {0, 0, 0};
-    }
-    if (any)
-        return color * first_color;
-    return RenderingBackend::BackgroundColor(current_ray);
-}
-
 void CPUBackend::Trace(Scene &scene, const std::vector <std::pair<int, int>> &params, Vector3 *colors, Viewport& viewport)
 {
     assert(scene.GetBvh() != nullptr);
@@ -46,20 +20,19 @@ void CPUBackend::Trace(Scene &scene, const std::vector <std::pair<int, int>> &pa
     Vector3 step_x = viewport.horizontal;
     Vector3 step_y = viewport.vertical;
     auto* bvh = scene.GetBvh();
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_real_distribution<double> dist(0.0, 1.0);
+    auto randoms = std::unique_ptr<double>(GetRandomArray());
 
     auto element_func = [&](std::pair<int, int> pair)
     {
         auto i = pair.first;
         auto j = pair.second;
-        double noise = dist(gen);
+        auto seed = (uint32_t) (j * width + i);
+        double noise = RandomDouble(randoms.get(), seed);
         double u = (i + noise) / double(width);
         double v = (j + noise) / double(height);
 
         Ray r(origin, screen + step_x * u + step_y * v);
-        return Color(bvh, r, dist, gen);
+        return RenderingBackend::Color<Bvh>(bvh, r, randoms.get(), seed);
     };
 
     auto slice_func = [&](size_t start, size_t end, std::shared_ptr<Vector3[]> buffer)

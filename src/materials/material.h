@@ -7,6 +7,8 @@
 #include "../math/ray.h"
 #include "../volumes/hit_result.h"
 
+typedef unsigned char uchar_t;
+
 class Material {
 public:
     Material() {};
@@ -23,7 +25,7 @@ private:
     static int ID_COUNTER;
     int id_;
     bool is_in_gpu_;
-    uint8_t* texture_;
+    uchar_t* texture_;
     size_t width_;
     size_t height_;
     double texel_width_;

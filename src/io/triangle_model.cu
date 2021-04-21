@@ -5,7 +5,7 @@
 #include "triangle_model.h"
 #include <assert.h>
 
-TriangleModel::TriangleModel(std::unique_ptr<Triangle[]> triangles, uint32_t count)
+TriangleModel::TriangleModel(std::unique_ptr<Triangle[]> triangles, size_t count)
 {
     triangles_ = std::move(triangles);
     count_ = count;
@@ -13,7 +13,7 @@ TriangleModel::TriangleModel(std::unique_ptr<Triangle[]> triangles, uint32_t cou
 
 void TriangleModel::Translate(Vector3 offset)
 {
-    for (uint32_t i = 0; i < count_; ++i)
+    for (size_t i = 0; i < count_; ++i)
     {
         triangles_[i].Translate(offset);
     }
@@ -21,7 +21,7 @@ void TriangleModel::Translate(Vector3 offset)
 
 void TriangleModel::Scale(Vector3 scale)
 {
-    for (uint32_t i = 0; i < count_; ++i)
+    for (size_t i = 0; i < count_; ++i)
     {
         triangles_[i].Scale(scale);
     }
@@ -29,7 +29,7 @@ void TriangleModel::Scale(Vector3 scale)
 
 void TriangleModel::Transform(Matrix3 transformation)
 {
-    for (uint32_t i = 0; i < count_; ++i)
+    for (size_t i = 0; i < count_; ++i)
     {
         triangles_[i].Transform(transformation);
     }

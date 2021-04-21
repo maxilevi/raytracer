@@ -42,8 +42,8 @@ public:
                     normals[k] = Vector3(mesh->normals[3 * index.n + 0],
                                          mesh->normals[3 * index.n + 1],
                                          mesh->normals[3 * index.n + 2]);
-                    uvs[0][k] = mesh->texcoords[2 * index.t + 0];
-                    uvs[1][k] = 1.0 - mesh->texcoords[2 * index.t + 1];
+                    uvs[0][(int)k] = mesh->texcoords[2 * index.t + 0];
+                    uvs[1][(int)k] = 1.0 - mesh->texcoords[2 * index.t + 1];
 
                     idx++;
                 }
@@ -87,7 +87,7 @@ public:
     {
         Scene scene;
 
-        auto model = LoadModel("./../models/louis/low_louis.obj");//high_quality ? "./../models/louis/high_louis.obj" : "./../models/louis/low_louis.obj");
+        auto model = LoadModel("./../models/louis/medium_louis.obj");//high_quality ? "./../models/louis/high_louis.obj" : "./../models/louis/low_louis.obj");
 
         model->Scale(Vector3(1));
         model->Transform(Matrix3::FromEuler({-3, 0, 0}));

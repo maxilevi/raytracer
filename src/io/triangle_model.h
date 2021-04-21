@@ -11,7 +11,7 @@
 
 class TriangleModel  {
 public:
-    TriangleModel(std::unique_ptr<Triangle[]> triangles, uint32_t count);
+    TriangleModel(std::unique_ptr<Triangle[]> triangles, size_t count);
 
     void Translate(Vector3 offset);
     void Scale(Vector3 scale);
@@ -19,11 +19,11 @@ public:
 
     static std::unique_ptr<TriangleModel> Merge(const TriangleModel*, const TriangleModel*);
 
-    [[nodiscard]] inline uint32_t Size() const { return count_; }
+    [[nodiscard]] inline size_t Size() const { return count_; }
 
     std::unique_ptr<Triangle[]> triangles_;
 private:
-    uint32_t count_;
+    size_t count_;
 };
 
 

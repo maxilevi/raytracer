@@ -96,3 +96,8 @@ std::ostream& operator<<(std::ostream& stream, const Vector3& vector)
     stream << "(" << vector.v_[0] << ", " << vector.v_[1] << ", "  << vector.v_[2] << ")";
     return stream;
 }
+
+CUDA_HOST_DEVICE Vector3 Vector3::Reflect(const Vector3 &v, const Vector3& n)
+{
+    return v - 2 * Vector3::Dot(v, n) * n;
+}
