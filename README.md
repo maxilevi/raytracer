@@ -8,12 +8,12 @@ wip raytracer written from scratch in C++. the program processes a defined scene
 
 # features
 
-* perpective camera [?]
-* ambient occlusion
-* uv mapping
-* diffuse shading
-* metal shading [?]
-* lights [?]
+* perpective camera ✔️
+* ambient occlusion ✔️
+* uv mapping ✔️
+* diffuse shading ✔️
+* metal shading ❓
+* lights ❓
 
 # benchmarks
 
