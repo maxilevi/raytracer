@@ -56,17 +56,12 @@ void Camera::Draw(Scene& scene)
 
 void Camera::Configure(Vector3 position, Vector3 look_at, double fov)
 {
-    double screen_ratio = (double(width_) / double(height_));
+    /*double screen_ratio = (double(width_) / double(height_));
     this->origin_ = Vector3(0, 0, 0);
     this->view_port_lower_left_corner_ = Vector3(-screen_ratio, -1, -1);
     this->horizontal_ = Vector3(std::abs(screen_ratio) * 2.0, 0, 0);
-    this->vertical_ = Vector3(0, 2, 0);
-    /*
-     *     model->Translate(Vector3(-0.5, -5.5, -4.5));
-+        //model->Transform(Matrix3::FromEuler({0, 0, 0}));
-+        model->Translate(Vector3(-0.4, -6.5, -4.75));
+    this->vertical_ = Vector3(0, 2, 0);*/
 
-         scene.Add(model);
     auto aspect_ratio = double(width_) / double(height_);
     auto theta = (fov * PI / 180.0);
     auto h = tan(theta / 2.0);
@@ -81,5 +76,5 @@ void Camera::Configure(Vector3 position, Vector3 look_at, double fov)
     this->origin_ = position;
     this->horizontal_ = u * viewport_width;
     this->vertical_ = v * viewport_height;
-    this->view_port_lower_left_corner_ = - horizontal_ / 2.0 - vertical_ / 2.0 - w;*/
+    this->view_port_lower_left_corner_ = - horizontal_ / 2.0 - vertical_ / 2.0 - w;
 }

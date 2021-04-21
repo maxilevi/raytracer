@@ -87,11 +87,11 @@ public:
     {
         Scene scene;
 
-        auto model = LoadModel("./../models/louis/medium_louis.obj");//high_quality ? "./../models/louis/high_louis.obj" : "./../models/louis/low_louis.obj");
+        auto model = LoadModel("./../models/louis/low_louis.obj");//high_quality ? "./../models/louis/high_louis.obj" : "./../models/louis/low_louis.obj");
 
         model->Scale(Vector3(1));
         model->Transform(Matrix3::FromEuler({-3, 0, 0}));
-        model->Translate(Vector3(-0.5, -5.5, -4.5));
+        model->Translate(Vector3(-0.325, -5.75, -7.25));
 
         scene.Add(model);
         scene.BuildBvh();

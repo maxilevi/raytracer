@@ -35,16 +35,9 @@ CUDA_HOST_DEVICE Vector3 Material::Sample(double s, double t) const
 {
     auto x = size_t(s * width_);
     auto y = size_t(t * height_);
+    auto idx = y * width_ * 3 + x * 3;
 
-    Vector3 ans;
-    for(auto i = 0; i < 3; ++i)
-    {
-        auto idx = y * width_ * 3 + x * 3 + i;
-        ans[i] = this->texture_[idx];
-    }
-    //if (ans.X() <= DBL_EPSILON && ans.Y() <= DBL_EPSILON && ans.Z() <= DBL_EPSILON)
-    //    printf("Pixels %d %d have no color\n", (int)x, (int)y);
-    return ans / 256.0;
+    return Vector3(this->texture_[idx + 0], this->texture_[idx + 1], this->texture_[idx + 2]) / 256.0;
 }
 
 CUDA_HOST_DEVICE Vector3 Material::BilinearSample(double s, double t) const

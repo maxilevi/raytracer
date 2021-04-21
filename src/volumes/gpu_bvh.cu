@@ -101,7 +101,7 @@ int GPUBvh::BvhDfs(std::vector<GPUBvhNode>& nodes, std::vector<GPUTriangle>& tri
         auto* tri2 = (Triangle*)right_child;
 
         tris.emplace_back(tri1, AddMaterialIfNecessary(tri1, mats));
-        tris.emplace_back(tri2, AddMaterialIfNecessary(tri1, mats));
+        tris.emplace_back(tri2, AddMaterialIfNecessary(tri2, mats));
 
         nodes.emplace_back((int)nodes.size(), cpu_bvh, (int)(tris.size()-2), (int)(tris.size()-1), true);
     }
