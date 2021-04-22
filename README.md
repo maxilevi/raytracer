@@ -6,6 +6,8 @@ wip raytracer written from scratch in C++. the program processes a defined scene
 
 ![](screenshots/free_france.png)
 
+![](screenshots/free_france_alternative.png)
+
 # features
 
 * perpective camera ✔️
