@@ -29,7 +29,7 @@ a `Scene` object contains a collection of volumes.
 
 a `Camera` can draw a given scene. when drawing, the camera casts rays to the screen in order to rasterize the volumes in the scene. after each ray the result is save into a pixel of a `Vector3` buffer of size `width` x `height`. This buffer is then dumped into a `.tga` file so it can be visualized.
 
-current supported volumes are `Triangle`s (i know its not technicaly a volume) ~and `Sphere`s`~. `Triangle` support allows us to load custom models.
+current supported volumes are `Triangle`s (i know its not technicaly a volume) ~and `Sphere`s~. `Triangle` support allows us to load custom models.
 
 ## backends
 
@@ -43,7 +43,7 @@ to calculate the intersection between a triangle and a ray the engine uses the [
 
 ## bvh
 
-in order to speed up collision detection a [Bounding Volume Hierarchy is used (BVH)](https://en.wikipedia.org/wiki/Bounding_volume_hierarchy), triangles are divided into smaller and smaller aabb so we can discard a lot of the search space on each collision test, much like a BST but in 3d. Because of CUDA limitations with recursion and virtual methods, the BVH is built on the CPU and then an iterative array based version is generated and copied to the GPU memory. see `src/volumes/bvh.cu` and `src/volumes/gpu_bvh.cu` for the respective implementations.
+in order to speed up collision detection a [Bounding Volume Hierarchy (BVH)](https://en.wikipedia.org/wiki/Bounding_volume_hierarchy) is used, triangles are divided into smaller and smaller aabb so we can discard a lot of the search space on each collision test, much like a BST but in 3d. Because of CUDA limitations with recursion and virtual methods, the BVH is built on the CPU and then an iterative array based version is generated and copied to the GPU memory. see `src/volumes/bvh.cu` and `src/volumes/gpu_bvh.cu` for the respective implementations.
 
 ## materials
 cpu materials (`Material`) and gpu materials (`GPUMaterial`) are the same object (`src/materials/material.h`). materials are created on the CPU (in other to load the textures) and then can be copied to the GPU, in that case the internal texture memory of the material is copied to the GPU and marked as a GPUMaterial.
