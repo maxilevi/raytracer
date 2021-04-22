@@ -3,14 +3,6 @@
  */
 
 #include "rendering_backend.h"
-#include "../kernel/random.h"
-
-CUDA_HOST_DEVICE Vector3 RenderingBackend::RandomPointOnUnitSphere(double u1, double u2)
-{
-    double lambda = acos(2.0 * u1 - 1) - PI / 2.0;
-    double phi = 2.0 * PI * u2;
-    return {std::cos(lambda) * std::cos(phi), std::cos(lambda) * std::sin(phi), std::sin(lambda)};
-}
 
 CUDA_HOST_DEVICE Vector3 RenderingBackend::BackgroundColor(const Ray& ray)
 {

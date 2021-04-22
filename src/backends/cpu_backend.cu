@@ -3,9 +3,7 @@
  */
 
 #include "cpu_backend.h"
-#include "../kernel/random.h"
 #include <thread>
-#include <random>
 #include <assert.h>
 
 #define THREAD_COUNT 32
@@ -20,19 +18,20 @@ void CPUBackend::Trace(Scene &scene, const std::vector <std::pair<int, int>> &pa
     Vector3 step_x = viewport.horizontal;
     Vector3 step_y = viewport.vertical;
     auto* bvh = scene.GetBvh();
-    auto randoms = std::unique_ptr<double>(GetRandomArray());
+    auto original_random = Random::New(false);
 
     auto element_func = [&](std::pair<int, int> pair)
     {
         auto i = pair.first;
         auto j = pair.second;
-        auto seed = (uint32_t) (j * width + i);
-        double noise = RandomDouble(randoms.get(), seed);
+        auto seed = (i * width + j);
+        auto random = original_random.Reseed(seed);
+        double noise = random.Double();
         double u = (i + noise) / double(width);
         double v = (j + noise) / double(height);
 
         Ray r(origin, screen + step_x * u + step_y * v);
-        return RenderingBackend::Color<Bvh>(bvh, r, randoms.get(), seed);
+        return RenderingBackend::Color<Bvh>(bvh, r, random);
     };
 
     auto slice_func = [&](size_t start, size_t end, std::shared_ptr<Vector3[]> buffer)

@@ -14,20 +14,21 @@
 #define THREAD_COUNT 512
 
 __global__
-void ColorKernel(GPUBvh bvh, double* randoms, Vector3* out_colors, const int* device_params, int n, int width, int height, Vector3 origin, Vector3 screen, Vector3 step_x, Vector3 step_y)
+void ColorKernel(GPUBvh bvh, Random original_random, Vector3* out_colors, const int* device_params, int n, int width, int height, Vector3 origin, Vector3 screen, Vector3 step_x, Vector3 step_y)
 {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= n) return;
 
     uint32_t seed = idx * 2047;
+    auto random = original_random.Reseed(seed);
     int i = device_params[2*idx];
     int j = device_params[2*idx+1];
-    double noise = RenderingBackend::RandomDouble(randoms, seed);
+    double noise = random.Double();
     double u = (i + noise) / double(width);
     double v = (j + noise) / double(height);
 
     Ray r(origin, screen + step_x * u + step_y * v);
-    out_colors[idx] = RenderingBackend::Color<GPUBvh>(&bvh, r, randoms, seed);
+    out_colors[idx] = RenderingBackend::Color<GPUBvh>(&bvh, r, random);
 }
 
 void GPUBackend::Trace(Scene &scene, const std::vector<std::pair<int, int>>& params, Vector3 *colors, Viewport& viewport)
@@ -38,16 +39,12 @@ void GPUBackend::Trace(Scene &scene, const std::vector<std::pair<int, int>>& par
     Vector3 screen = viewport.view_port_lower_left_corner;
     Vector3 step_x = viewport.horizontal;
     Vector3 step_y = viewport.vertical;
-    auto cpu_randoms = std::unique_ptr<double>(GetRandomArray());
+    auto random = Random::New(true);
 
     size_t n = params.size();
     size_t step = n / ((int)ceil(n / (float)33177600));
 
     std::cout << "Total samples to process = " << n << std::endl;
-
-    double* gpu_randoms;
-    CUDA_CALL(cudaMalloc(&gpu_randoms, sizeof(double) * RenderingBackend::kRandomCount));
-    CUDA_CALL(cudaMemcpy(gpu_randoms, cpu_randoms.get(), sizeof(double) * RenderingBackend::kRandomCount, cudaMemcpyHostToDevice));
 
     Vector3* out_colors;
     int* device_params;
@@ -75,7 +72,7 @@ void GPUBackend::Trace(Scene &scene, const std::vector<std::pair<int, int>>& par
 
         CUDA_CALL(cudaMemcpy(device_params, &params[0] + w, size * 2 * sizeof(int), cudaMemcpyHostToDevice));
 
-        ColorKernel<<<blocks, THREAD_COUNT>>>(gpu_bvh, gpu_randoms, out_colors, device_params, size, width, height, origin, screen, step_x, step_y);
+        ColorKernel<<<blocks, THREAD_COUNT>>>(gpu_bvh, random, out_colors, device_params, size, width, height, origin, screen, step_x, step_y);
 
         CUDA_CALL(cudaPeekAtLastError())
         CUDA_CALL(cudaDeviceSynchronize());
@@ -99,7 +96,6 @@ void GPUBackend::Trace(Scene &scene, const std::vector<std::pair<int, int>>& par
 
     CUDA_CALL(cudaFree(out_colors));
     CUDA_CALL(cudaFree(device_params));
-    CUDA_CALL(cudaFree(gpu_randoms));
     GPUBvh::Delete(gpu_bvh);
     for(size_t i = 0; i < gpu_materials.size(); ++i)
     {

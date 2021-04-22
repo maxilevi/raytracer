@@ -5,15 +5,6 @@
 #ifndef RAYTRACER_HELPER_H
 #define RAYTRACER_HELPER_H
 
-// #include <helper_cuda.h>
-
-#if __CUDA_ARCH__ >= 200
-#include <stdio.h>
-#define CUDA_PRINT(x) { printf(x); }
-#else
-#define CUDA_PRINT(x) {}
-#endif
-
 #define CUDA_DEVICE __device__
 #define CUDA_HOST_DEVICE CUDA_DEVICE __host__
 #if 1

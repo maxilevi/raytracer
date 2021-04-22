@@ -6,7 +6,6 @@
 #define RAYTRACER_CAMERA_H
 
 
-#include <random>
 #include "math/vector3.h"
 #include "scenes/scene.h"
 #include "backends/rendering_backend.h"
