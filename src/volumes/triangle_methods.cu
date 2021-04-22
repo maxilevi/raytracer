@@ -139,8 +139,6 @@ CUDA_HOST_DEVICE bool TriangleMethods::Hit(const Ray &ray, const Vector3* vertic
     double coord0 = u * texture_coords[0][0] + v * texture_coords[0][1] + r * texture_coords[0][2];
     double coord1 = u * texture_coords[1][0] + v * texture_coords[1][1] + r * texture_coords[1][2];
     record.Color = material->BilinearSample(coord0, coord1);
-    //if (record.Color.X() <= DBL_EPSILON && record.Color.Y() <= DBL_EPSILON && record.Color.Z() <= DBL_EPSILON)
-    //    record.Color = Vector3(coord0, coord1, 1);
-        //    printf("error %f %f %f, %f %f %f\n", texture_coords[0][0], texture_coords[0][1], texture_coords[0][2], texture_coords[1][0], texture_coords[1][1], texture_coords[1][2]);
+    record.Material = material;
     return true;
 }
