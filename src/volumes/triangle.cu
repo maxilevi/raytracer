@@ -32,13 +32,13 @@ void Triangle::Scale(Vector3 scale)
 
 bool Triangle::BoundingBox(AABB &bounding_box) const
 {
-    Vector3 min(std::numeric_limits<double>::max()), max(std::numeric_limits<double>::min());
+    Vector3 min(MAX_DOUBLE), max(MIN_DOUBLE);
     for(auto& v : v_)
     {
         for(int i = 0; i < 3; ++i)
         {
-            min[i] = std::min(v[i], min[i]);
-            max[i] = std::max(v[i], max[i]);
+            min[i] = MIN(v[i], min[i]);
+            max[i] = MAX(v[i], max[i]);
         }
     }
     bounding_box = AABB(min, max);
