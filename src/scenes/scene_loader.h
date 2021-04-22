@@ -17,9 +17,11 @@ public:
     {
         std::vector<std::shared_ptr<Material>> materials;
         std::vector<Triangle> triangles;
+        MaterialOptions options;
+        options.type = MaterialType::DIFFUSE;
 
         for (size_t i = 0; i < mesh->material_count; ++i) {
-            materials.push_back(std::make_shared<Material>(mesh->materials[i].map_Kd.path));
+            materials.push_back(std::make_shared<Material>(mesh->materials[i].map_Kd.path, options));
             std::cout << "Loading material \"" << mesh->materials[i].map_Kd.path << "\"" << std::endl;
         }
         for (size_t i = 0; i < mesh->group_count; ++i)

@@ -112,7 +112,7 @@ int GPUBvh::BvhDfs(std::vector<GPUBvhNode>& nodes, std::vector<GPUTriangle>& tri
         nodes.emplace_back((int)nodes.size(), cpu_bvh, left_idx, right_idx, false);
     }
 
-    return nodes.size()-1;
+    return (int)(nodes.size()-1);
 }
 
 std::pair<GPUBvh, std::vector<GPUMaterial>> GPUBvh::FromBvh(Bvh* cpu_bvh)

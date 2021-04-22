@@ -3,14 +3,13 @@
  */
 
 #include "material.h"
-#include "../io/tga.h"
 #include "../io/stb_image.h"
 #include <string>
 #include <assert.h>
 
 int Material::ID_COUNTER = 0;
 
-Material::Material(const char *filename)
+Material::Material(const char *filename, MaterialOptions options)
 {
     int w, h, n;
     uchar_t *data = stbi_load(filename, &w, &h, &n, 3);
@@ -23,6 +22,7 @@ Material::Material(const char *filename)
 
     stbi_image_free(data);
     this->texture_ = colors;
+    this->options_ = options;
     this->width_ = w;
     this->height_ = h;
     this->texel_width_ = (1.0 / width_);
@@ -73,6 +73,7 @@ Material Material::MakeGPUMaterial()
     mat.width_ = width_;
     mat.height_ = height_;
     mat.id_ = id_;
+    mat.options_ = options_;
     assert(mat.width_ != 0);
     assert(mat.height_ != 0);
 
@@ -90,17 +91,30 @@ int Material::Id()
 {
     return id_;
 }
-/*
-bool Material::Scatter(const Ray& , const HitResult & result, Vector3 &attenuation, Ray &) const
-{
-    auto scatter_direction = rec.normal + random_unit_vector();
-    scattered = ray(rec.p, scatter_direction);
-    attenuation = albedo;
-    return true;
 
-    Vector3 reflected = reflect(unit_vector(r_in.direction()), rec.normal);
-    scattered = ray(rec.p, reflected);
-    attenuation = albedo;
-    return (dot(scattered.direction(), rec.normal) > 0);
+
+CUDA_HOST_DEVICE bool Material::ScatterDiffuse(const Ray& ray, const HitResult& result, Vector3& attenuation, Ray& scattered, Random& random) const
+{
+    auto scatter_direction = result.Normal + random.PointOnUnitSphere();
+    scattered = Ray(result.Point, scatter_direction);
+    attenuation = result.Color;
+    return true;
 }
-*/
+
+CUDA_HOST_DEVICE bool Material::ScatterMetal(const Ray& ray, const HitResult& result, Vector3& attenuation, Ray& scattered, Random& random) const
+{
+    auto dir = ray.Direction();
+    auto reflected = Vector3::Reflect(dir.Normalized(), result.Normal);
+    scattered = Ray(result.Point, reflected);//+ fuzz*random_in_unit_sphere()
+    attenuation = result.Color;
+    return (Vector3::Dot(scattered.Direction(), result.Normal) > 0);
+}
+
+CUDA_HOST_DEVICE bool Material::Scatter(const Ray& ray, const HitResult& result, Vector3& attenuation, Ray& new_ray, Random& random) const
+{
+    if (options_.type == DIFFUSE)
+        return ScatterDiffuse(ray, result, attenuation, new_ray, random);
+    else if (options_.type == METAL)
+        return ScatterMetal(ray, result, attenuation, new_ray, random);
+    return false;
+}

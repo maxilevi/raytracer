@@ -7,8 +7,6 @@
 
 
 #include "../volumes/triangle.h"
-#include "../kernel/vector.h"
-#include "../kernel/kernel_ptr.h"
 #include "../io/triangle_model.h"
 #include "../volumes/hit_result.h"
 #include "../volumes/aabb.h"
