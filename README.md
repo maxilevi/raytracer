@@ -2,7 +2,7 @@
 
 wip raytracer written from scratch in C++. the program processes a defined scene then rasterizes it and outputs a `.tga` file. the program support both doing the calculations on the CPU using C++ 11 threads or offloading the calculations to the GPU using CUDA.
 
-# eye-candy
+# eye candy
 
 ![](screenshots/free_france_alternative.png)
 
