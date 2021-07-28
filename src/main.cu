@@ -67,7 +67,7 @@ int main(int argc, char** argv)
         return 1;
 
     /* Camera */
-    Camera camera(1920 / 4, 1080 / 4, backend);
+    Camera camera(1920 / 2, 1080 / 2, backend);
     camera.Configure(Vector3(0, 0, 0), Vector3(0, 0, -5), 60);
     camera.Draw(scene);
 
