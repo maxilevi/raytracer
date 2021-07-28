@@ -59,7 +59,7 @@ std::unique_ptr<RenderingBackend> GetBackend(int argc, char** argv)
 int main(int argc, char** argv)
 {
     auto t1 = std::chrono::high_resolution_clock::now();
-    auto scene = SceneLoader::LouisXIVScene(false);
+    auto scene = SceneLoader::LouisXIVScene(0);
 
     /* Backend */
     std::unique_ptr<RenderingBackend> backend = GetBackend(argc, argv);

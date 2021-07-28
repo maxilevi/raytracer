@@ -18,7 +18,7 @@ public:
         std::vector<std::shared_ptr<Material>> materials;
         std::vector<Triangle> triangles;
         MaterialOptions options;
-        options.type = MaterialType::DIFFUSE;
+        options.type = MaterialType::METAL;
 
         for (size_t i = 0; i < mesh->material_count; ++i) {
             materials.push_back(std::make_shared<Material>(mesh->materials[i].map_Kd.path, options));
@@ -85,11 +85,16 @@ public:
         return model;
     }
 
-    static Scene LouisXIVScene(bool high_quality)
+    static Scene LouisXIVScene(int quality)
     {
+        assert(quality >= 0 && quality < 3);
         Scene scene;
-
-        auto model = LoadModel("./../models/louis/low_louis.obj");//high_quality ? "./../models/louis/high_louis.obj" : "./../models/louis/low_louis.obj");
+        std::string models[] = {
+            "./../models/louis/low_louis.obj",
+            "./../models/louis/medium_louis.obj",
+            "./../models/louis/high_louis.obj"
+        };
+        auto model = LoadModel(models[quality].c_str());
 
         model->Scale(Vector3(1));
         model->Transform(Matrix3::FromEuler({-3, 0, 0}));
