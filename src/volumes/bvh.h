@@ -14,9 +14,13 @@
 class Bvh : public Volume {
 public:
     Bvh() = default;
-    Bvh(std::vector<std::shared_ptr<Triangle>>& volumes, size_t start, size_t end);
-    bool Hit(const Ray& ray, double t_min, double t_max, HitResult& record) const override;
-    bool BoundingBox(AABB& bounding_box) const override;
+
+    Bvh(std::vector<std::shared_ptr<Triangle>> &volumes, size_t start, size_t end);
+
+    bool Hit(const Ray &ray, double t_min, double t_max, HitResult &record) const override;
+
+    bool BoundingBox(AABB &bounding_box) const override;
+
     std::vector<std::shared_ptr<Triangle>> volumes_;
 private:
     AABB box_;
@@ -26,6 +30,7 @@ private:
     size_t end_;
 
     friend class GPUBvh;
+
     friend class GPUBvhNode;
 };
 
