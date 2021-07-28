@@ -105,7 +105,7 @@ CUDA_HOST_DEVICE bool Material::ScatterMetal(const Ray& ray, const HitResult& re
 {
     auto dir = ray.Direction();
     auto reflected = Vector3::Reflect(dir.Normalized(), result.Normal);
-    scattered = Ray(result.Point, reflected);//+ fuzz*random_in_unit_sphere()
+    scattered = Ray(result.Point, reflected/* + 1.0 * random.PointOnUnitSphere()*/);
     attenuation = result.Color;
     return (Vector3::Dot(scattered.Direction(), result.Normal) > 0);
 }

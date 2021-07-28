@@ -18,6 +18,7 @@ public:
     virtual void Trace(Scene& scene, const std::vector<std::pair<int, int>>& params, Vector3* colors, Viewport& viewport) = 0;
     static CUDA_HOST_DEVICE Vector3 BackgroundColor(const Ray& ray);
 
+
     template<class T>
     static CUDA_HOST_DEVICE Vector3 Color(const T* bvh, const Ray& ray, Random& random)
     {
@@ -32,23 +33,22 @@ public:
             if (!any)
             {
                 any = true;
-                //color = result.Color;
+                color = result.Color;
             }
 
             if (iteration++ == RenderingBackend::kMaxLightBounces)
                 return {0, 0, 0};
 
+            shade *= 0.8;
             Ray scattered;
             Vector3 attenuation;
             if (result.Material->Scatter(current_ray, result, attenuation, scattered, random))
                 color *= attenuation;
-            else
-                return {0, 0, 0};
 
             current_ray = scattered;
         }
         if (any)
-            return color;
+            return shade * color;
         return RenderingBackend::BackgroundColor(current_ray);
     }
 };

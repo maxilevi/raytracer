@@ -11,7 +11,7 @@
 #include "../helper.h"
 #include "../kernel/random.h"
 
-#define THREAD_COUNT 512
+#define THREAD_COUNT 256
 
 __global__
 void ColorKernel(GPUBvh bvh, Random original_random, Vector3* out_colors, const int* device_params, int n, int width, int height, Vector3 origin, Vector3 screen, Vector3 step_x, Vector3 step_y)
@@ -60,7 +60,6 @@ void GPUBackend::Trace(Scene &scene, const std::vector<std::pair<int, int>>& par
     auto gpu_materials = gpu_result.second;
 
     std::cout << "Starting CUDA work" << std::endl;
-
 
     for(size_t w = 0; w < n; w += step)
     {
