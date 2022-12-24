@@ -42,7 +42,7 @@ Bvh::Bvh(std::vector<std::shared_ptr<Triangle>> &volumes, size_t start, size_t e
 
         return box_a.Min()[axis] < box_b.Min()[axis];
     };
-    /* We have 3 cases either we have 1 or 2 triangles left if so we set those as the leaf nodes or we have more than 2.
+    /* We have 3 cases. Either we have 1, 2 or more triangles left. In the first two cases we set those as the leaf nodes.
      * In the third case we need to recursively subdivide the collection even more. Therefore, we sort the remaining triangles
      * according to a random axis and set the childs of the current node to be 2 new BVH trees generated from the remaining
      * elements.
